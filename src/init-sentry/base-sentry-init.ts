@@ -1,22 +1,22 @@
 import type {Options} from '@sentry/types';
-import {SentryExecutionEnvEnum, getSentryByEnv} from '../env/execution-env';
+import {SentryDep, SentryExecutionEnvEnum} from '../env/execution-env';
 import {SentryReleaseEnvEnum} from '../env/release-env';
 import {EventExtraContextCreator} from '../event-context/event-context';
-import {processSentryEvent} from './event-processor';
-import {UserOverrides, createSentryConfig} from './sentry-config';
+import {processSentryEvent} from '../processing/event-processor';
+import {UserOverrides, createSentryConfig} from '../processing/sentry-config';
 
 /** Configuration for initializing Sentry. */
 export type InitSentryInput = {
-    /**
-     * The environment wherein the Sentry client will execute. Used to determine which Sentry client
-     * to load: browser or node.
-     */
-    executionEnv: SentryExecutionEnvEnum;
     /**
      * The release environment, prod vs dev rather than browser vs node. In dev, events won't be
      * sent to sentry. In both options, all events will be logged to the local console.
      */
     releaseEnv: SentryReleaseEnvEnum;
+    /**
+     * The environment wherein the Sentry client will execute. Used to determine which Sentry client
+     * to load: browser or node.
+     */
+    executionEnv: SentryExecutionEnvEnum;
     /** Name for the current release. */
     releaseName: Required<Options>['release'];
     /** DSN needed for Sentry to hook up to your sentry project. */
@@ -31,21 +31,21 @@ export type InitSentryInput = {
 };
 
 /**
- * Setup a sentry client with all the default sentry-vir integrations and configs.
+ * Base Sentry init. Requires the Sentry module to already have been imported. Setup a sentry client
+ * with all the default sentry-vir integrations and configs.
  *
  * To override any default sentry-vir settings, include them in the userConfig input.
  */
 /* c8 ignore next */
-export async function initSentry({
-    executionEnv,
+export async function baseInitSentry({
     dsn,
     releaseEnv,
     releaseName,
     sentryConfigOverrides,
     createUniversalContext,
-}: InitSentryInput) {
-    const sentryDep = await getSentryByEnv(executionEnv);
-
+    sentryDep,
+    executionEnv,
+}: InitSentryInput & {sentryDep: SentryDep}) {
     const finalSentryConfig = await createSentryConfig(
         executionEnv,
         sentryDep,

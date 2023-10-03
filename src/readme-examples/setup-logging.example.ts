@@ -1,8 +1,7 @@
+import {initSentry} from 'sentry-vir/dist/esm/browser';
 import {
-    SentryExecutionEnvEnum,
     SentryReleaseEnvEnum,
     handleError,
-    initSentry,
     sendLog,
     setSentryClientForLogging,
     throwWithExtraContext,
@@ -18,7 +17,6 @@ sendLog.warning('warning log');
 /** Standard init. Note that this returns a promise. */
 initSentry({
     dsn: 'Sentry project id provided by Sentry',
-    executionEnv: SentryExecutionEnvEnum.Browser,
     releaseEnv: SentryReleaseEnvEnum.Dev,
     releaseName: 'my release',
     createUniversalContext() {

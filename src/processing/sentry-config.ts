@@ -17,6 +17,8 @@ export type UserOverrides = Omit<Partial<Options>, keyof RequiredSentryOptions> 
 export type RequiredSentryOptions = Pick<Required<Options>, 'dsn' | 'environment' | 'release'>;
 
 /** Creates the sentry config used internally by sentry-vir. */
+// can't test config creation because it depends on execution environment
+/* c8 ignore next 60 */
 export async function createSentryConfig<const Env extends SentryExecutionEnvEnum>(
     env: Env,
     sentryDep: SentryDepByEnv<Env>,

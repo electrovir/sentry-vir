@@ -1,6 +1,7 @@
 import {getEnumTypedValues} from '@augment-vir/common';
 import {assert} from '@open-wc/testing';
-import {SentryExecutionEnvEnum, sentryDepByEnv} from './execution-env';
+import {sentryDepByEnv} from './auto';
+import {SentryExecutionEnvEnum} from './env/execution-env';
 
 describe('sentryDepByEnv', () => {
     it('includes an entry for each execution env', () => {

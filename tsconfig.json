@@ -1,7 +1,12 @@
 {
     "compilerOptions": {
-        "declarationDir": "dist/types",
         "outDir": "dist/esm"
     },
+    "exclude": [
+        "./configs",
+        "./dist",
+        "./src/readme-examples",
+        "./node_modules"
+    ],
     "extends": "./tsconfig.base.json"
 }

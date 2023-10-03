@@ -1,5 +1,5 @@
 import {extractErrorMessage} from '@augment-vir/common';
-import {EventHint, Event as SentryEvent} from '@sentry/types';
+import type {EventHint, Event as SentryEvent} from '@sentry/types';
 import {
     EventExtraContextCreator,
     convertEventDetailsToSentryContext,

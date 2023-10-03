@@ -1,4 +1,4 @@
-import {ScopeContext} from '@sentry/types';
+import type {ScopeContext} from '@sentry/types';
 import {EventSeverityEnum} from './event-severity';
 
 /**
