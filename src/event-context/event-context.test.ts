@@ -35,7 +35,7 @@ describe(convertEventDetailsToSentryContext.name, () => {
 });
 
 describe('EventExtraContext', () => {
-    it('blocks non-json compatible values', () => {
-        assertTypeOf({entry: new RegExp('hello')}).not.toMatchTypeOf<EventExtraContext>();
+    it('allows anything', () => {
+        assertTypeOf({entry: new RegExp('hello')}).toMatchTypeOf<EventExtraContext>();
     });
 });

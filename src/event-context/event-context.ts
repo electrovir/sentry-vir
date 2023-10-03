@@ -1,4 +1,3 @@
-import {JsonCompatibleValue} from '@augment-vir/common';
 import {ScopeContext} from '@sentry/types';
 import {EventSeverityEnum} from './event-severity';
 
@@ -6,7 +5,7 @@ import {EventSeverityEnum} from './event-severity';
  * Used for all extra context types. While keys must be strings, values can be whatever but must be
  * JSON compatible.
  */
-export type EventExtraContext = Record<string, JsonCompatibleValue>;
+export type EventExtraContext = Record<string, unknown>;
 
 /** Function that generates extra event context. */
 export type EventExtraContextCreator = () => EventExtraContext;
