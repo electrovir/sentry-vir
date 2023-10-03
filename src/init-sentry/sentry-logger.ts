@@ -16,7 +16,7 @@ export type SentryClientForLogging = Pick<
 let sentryClientForLogging: SentryClientForLogging | undefined;
 
 /** An event that was triggered before setSentryClientForLogging was called. */
-export type PrematureEvent<EntryPointFunction extends AnyFunction> = {
+export type PrematureEvent<EntryPointFunction extends AnyFunction = AnyFunction> = {
     entryPoint: EntryPointFunction;
     inputs: Parameters<EntryPointFunction>;
 };
@@ -25,7 +25,7 @@ export type PrematureEvent<EntryPointFunction extends AnyFunction> = {
  * Used to store events before the Sentry client is setup. This is exported for testing purposes
  * only, you don't need to do anything with this.
  */
-export const prematureSentryEvents: PrematureEvent<any>[] = [];
+export const prematureSentryEvents: PrematureEvent[] = [];
 
 /**
  * Asynchronously set the Sentry client for logging. When this is called, any events that were
@@ -110,7 +110,7 @@ function sendLogToSentry(
 ): string | undefined {
     if (!sentryClientForLogging) {
         prematureSentryEvents.push({
-            entryPoint: 'sendLog',
+            entryPoint: sendLogToSentry,
             inputs: [
                 logInfo,
                 eventDetails,
