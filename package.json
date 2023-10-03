@@ -1,6 +1,6 @@
 {
     "name": "sentry-vir",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "keywords": [
         "config",
         "helper",
@@ -23,9 +23,6 @@
     "main": "dist/cjs/index.js",
     "module": "dist/esm/index.js",
     "types": "dist/esm/index.d.ts",
-    "workspaces": [
-        "./"
-    ],
     "scripts": {
         "compile": "rm -rf dist && tsc --project tsconfig.json && npm i && tsc --project tsconfig.cjs.json",
         "docs": "virmator docs",

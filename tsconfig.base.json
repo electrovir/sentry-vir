@@ -4,11 +4,5 @@
         "outDir": "./dist",
         "rootDir": "./src"
     },
-    "exclude": [
-        "./configs",
-        "./dist",
-        "./node_modules",
-        "packages/node-js/test-files"
-    ],
     "extends": "virmator/base-configs/base-tsconfig.json"
 }
