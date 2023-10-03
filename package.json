@@ -1,0 +1,70 @@
+{
+    "name": "sentry-vir",
+    "version": "0.0.1",
+    "keywords": [
+        "config",
+        "helper",
+        "sentry",
+        "vir"
+    ],
+    "homepage": "https://github.com/electrovir/sentry-vir",
+    "bugs": {
+        "url": "https://github.com/electrovir/sentry-vir/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/electrovir/sentry-vir"
+    },
+    "license": "(MIT or CC0 1.0)",
+    "author": {
+        "name": "electrovir",
+        "url": "https://github.com/electrovir"
+    },
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
+    "types": "dist/types/index.d.ts",
+    "scripts": {
+        "compile": "rm -rf dist && tsc --project tsconfig.json && tsc --project tsconfig.cjs.json",
+        "docs": "virmator docs",
+        "format": "virmator format",
+        "publish": "virmator publish \"npm run compile && npm run test:all\"",
+        "test": "virmator test-web",
+        "test:all": "concurrently --colors --kill-others-on-fail -c auto --names types,tests,spelling,format,docs \"npm run test:types\" \"npm run test:coverage\" \"npm run test:spelling\" \"npm run test:format\" \"npm run test:docs\"",
+        "test:coverage": "npm run test coverage",
+        "test:docs": "virmator docs check",
+        "test:format": "virmator format check",
+        "test:spelling": "virmator spellcheck",
+        "test:types": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@augment-vir/common": "^19.4.1",
+        "@sentry/browser": "^7.73.0",
+        "@sentry/node": "^7.73.0",
+        "type-fest": "^4.3.3"
+    },
+    "devDependencies": {
+        "@augment-vir/browser-testing": "^19.4.1",
+        "@open-wc/testing": "^3.2.0",
+        "@types/mocha": "^10.0.2",
+        "@web/dev-server-esbuild": "^0.4.1",
+        "@web/test-runner": "^0.17.1",
+        "@web/test-runner-commands": "^0.8.0",
+        "@web/test-runner-playwright": "^0.10.1",
+        "@web/test-runner-visual-regression": "^0.8.2",
+        "cspell": "^7.3.7",
+        "esbuild": "^0.19.4",
+        "istanbul-smart-text-reporter": "^1.1.2",
+        "markdown-code-example-inserter": "^0.3.2",
+        "npm-check-updates": "~16.12.3",
+        "prettier": "^2.8.8",
+        "prettier-plugin-interpolated-html-tags": "^0.0.4",
+        "prettier-plugin-jsdoc": "^0.4.2",
+        "prettier-plugin-multiline-arrays": "^2.0.0",
+        "prettier-plugin-organize-imports": "^3.2.3",
+        "prettier-plugin-packagejson": "^2.4.6",
+        "prettier-plugin-sort-json": "^2.0.0",
+        "prettier-plugin-toml": "^0.3.5",
+        "typedoc": "^0.25.1",
+        "virmator": "^8.0.5"
+    }
+}
