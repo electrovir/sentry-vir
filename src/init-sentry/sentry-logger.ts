@@ -49,35 +49,44 @@ export async function setSentryClientForLogging(client: MaybePromise<SentryClien
 
 function sendPrematureEvents() {
     while (prematureSentryEvents.length) {
-        const prematureLog = prematureSentryEvents.pop();
-        if (!prematureLog) {
-            return;
-        }
+        try {
+            const prematureLog = prematureSentryEvents.pop();
+            if (!prematureLog) {
+                return;
+            }
 
-        prematureLog.entryPoint(...prematureLog.inputs);
+            prematureLog.entryPoint(...prematureLog.inputs);
+        } catch (caught) {
+            console.error('error while trying to send sentry logs:', caught);
+        }
     }
 }
 
 /** Record an error to Sentry without throwing it. */
 export function handleError(error: unknown, extraContext?: EventExtraContext): string | undefined {
-    if (!sentryClientForLogging) {
-        prematureSentryEvents.push({
-            entryPoint: handleError,
-            inputs: [
-                error,
-                extraContext,
-            ],
+    try {
+        if (!sentryClientForLogging) {
+            prematureSentryEvents.push({
+                entryPoint: handleError,
+                inputs: [
+                    error,
+                    extraContext,
+                ],
+            });
+            return undefined;
+        }
+
+        const scopeContext = convertEventDetailsToSentryContext({
+            extraContext,
+            severity: EventSeverityEnum.Error,
         });
+
+        const eventId = sentryClientForLogging.captureException(error, scopeContext);
+        return eventId;
+    } catch (caught) {
+        console.error('error while trying to handle error:', caught);
         return undefined;
     }
-
-    const scopeContext = convertEventDetailsToSentryContext({
-        extraContext,
-        severity: EventSeverityEnum.Error,
-    });
-
-    const eventId = sentryClientForLogging.captureException(error, scopeContext);
-    return eventId;
 }
 
 /** Send non-error events to Sentry. */
@@ -108,25 +117,30 @@ function sendLogToSentry(
     logInfo: string | Omit<SentryEvent, 'extra' | 'level'>,
     eventDetails: EventDetails,
 ): string | undefined {
-    if (!sentryClientForLogging) {
-        prematureSentryEvents.push({
-            entryPoint: sendLogToSentry,
-            inputs: [
-                logInfo,
-                eventDetails,
-            ],
-        });
+    try {
+        if (!sentryClientForLogging) {
+            prematureSentryEvents.push({
+                entryPoint: sendLogToSentry,
+                inputs: [
+                    logInfo,
+                    eventDetails,
+                ],
+            });
+            return undefined;
+        }
+
+        const scopeContext = convertEventDetailsToSentryContext(eventDetails);
+
+        const eventId: string = isRuntimeTypeOf(logInfo, 'string')
+            ? sentryClientForLogging.captureMessage(logInfo, scopeContext)
+            : sentryClientForLogging.captureEvent({
+                  ...logInfo,
+                  ...scopeContext,
+              });
+
+        return eventId;
+    } catch (caught) {
+        console.error('error while trying to send log:', caught);
         return undefined;
     }
-
-    const scopeContext = convertEventDetailsToSentryContext(eventDetails);
-
-    const eventId: string = isRuntimeTypeOf(logInfo, 'string')
-        ? sentryClientForLogging.captureMessage(logInfo, scopeContext)
-        : sentryClientForLogging.captureEvent({
-              ...logInfo,
-              ...scopeContext,
-          });
-
-    return eventId;
 }
