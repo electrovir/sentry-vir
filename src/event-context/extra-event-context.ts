@@ -38,7 +38,10 @@ export function extractExtraEventContext(event: EventHint | Event): EventExtraCo
         'originalException' in event
             ? extractExtraContentFromSymbol(event.originalException)
             : undefined;
-    const fromCapture = 'captureContext' in event ? event.captureContext : undefined;
+    const fromCapture =
+        'captureContext' in event && 'extra' in event.captureContext
+            ? event.captureContext?.extra
+            : undefined;
 
     const combined: EventExtraContext = {
         ...fromRootSymbol,

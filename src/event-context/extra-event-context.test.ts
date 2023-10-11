@@ -33,7 +33,7 @@ describe(extractExtraEventContext.name, () => {
         },
         {
             it: 'grabs capture context',
-            input: {captureContext: {otherObject: 'hi'}},
+            input: {captureContext: {extra: {otherObject: 'hi'}}},
             expect: {
                 otherObject: 'hi',
             },
