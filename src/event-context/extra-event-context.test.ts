@@ -19,14 +19,28 @@ describe(extractExtraEventContext.name, () => {
         },
         {
             it: 'grabs context from an ordinary object',
-            input: ensureType<HasExtraContext>({[extraEventContextSymbol]: {otherObject: 'hi'}}),
+            input: {[extraEventContextSymbol]: {otherObject: 'hi'}} as any,
+            expect: {
+                otherObject: 'hi',
+            },
+        },
+        {
+            it: 'grabs context from hint exception',
+            input: {originalException: {[extraEventContextSymbol]: {otherObject: 'hi'}}},
+            expect: {
+                otherObject: 'hi',
+            },
+        },
+        {
+            it: 'grabs capture context',
+            input: {captureContext: {otherObject: 'hi'}},
             expect: {
                 otherObject: 'hi',
             },
         },
         {
             it: 'returns undefined if no context found',
-            input: {stuff: 'hi'},
+            input: {},
             expect: undefined,
         },
     ]);

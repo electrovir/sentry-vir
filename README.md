@@ -25,8 +25,8 @@ Full api reference: https://electrovir.github.io/sentry-vir
  * If initializing sentry for node, instead import from 'sentry-vir/dist/esm/node' (for ESM) or
  * 'sentry-vir/dist/cjs/node' (for CommonJS).
  */
+import {SentryReleaseEnvEnum} from 'sentry-vir';
 import {initSentry} from 'sentry-vir/dist/esm/browser';
-import {SentryReleaseEnvEnum} from '..';
 
 initSentry({
     dsn: 'Sentry project id provided by Sentry',
@@ -47,8 +47,8 @@ initSentry({
 <!-- example-link: src/readme-examples/setup-logging.example.ts -->
 
 ```TypeScript
+import {SentryReleaseEnvEnum, handleError, sendLog, throwWithExtraContext} from 'sentry-vir';
 import {initSentry} from 'sentry-vir/dist/esm/browser';
-import {SentryReleaseEnvEnum, handleError, sendLog, throwWithExtraContext} from '..';
 
 sendLog.info('starting file');
 /** Extra log context can be added as the second argument to a sendLog method. */
