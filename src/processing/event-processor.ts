@@ -17,7 +17,8 @@ export function processSentryEvent(
     createUniversalContext?: EventExtraContextCreator | undefined,
 ) {
     const extraContext = {
-        ...extractExtraEventContext(hint.originalException),
+        ...extractExtraEventContext(hint),
+        ...extractExtraEventContext(event),
         ...createUniversalContext?.(),
         originalFullMessage: event.message || extractErrorMessage(hint.originalException),
     };
