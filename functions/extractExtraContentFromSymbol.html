@@ -1,71 +1,36 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>sentry-vir - v0.2.1</title><meta name="description" content="Documentation for sentry-vir"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css?cache=1697067513151"/><link rel="stylesheet" href="assets/highlight.css?cache=1697067513151"/><script defer src="assets/main.js?cache=1697067513151"></script><script async src="assets/search.js?cache=1697067513151" id="tsd-search-script"></script><script async src="assets/navigation.js?cache=1697067513151" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>extractExtraContentFromSymbol | sentry-vir - v0.2.1</title><meta name="description" content="Documentation for sentry-vir"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css?cache=1697067513151"/><link rel="stylesheet" href="../assets/highlight.css?cache=1697067513151"/><script defer src="../assets/main.js?cache=1697067513151"></script><script async src="../assets/search.js?cache=1697067513151" id="tsd-search-script"></script><script async src="../assets/navigation.js?cache=1697067513151" id="tsd-nav-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container">
-<div class="table-cell" id="tsd-search" data-base=".">
+<div class="table-cell" id="tsd-search" data-base="..">
 <div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="#icon-search"></use></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
 <div class="field">
 <div id="tsd-toolbar-links"></div></div>
 <ul class="results">
 <li class="state loading">Preparing search index...</li>
-<li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">sentry-vir - v0.2.1</a></div>
+<li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">sentry-vir - v0.2.1</a></div>
 <div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><use href="#icon-menu"></use></svg></a></div></div></header>
 <div class="container container-main">
 <div class="col-content">
 <div class="tsd-page-title">
-<h2>sentry-vir - v0.2.1</h2></div>
-<section class="tsd-panel-group tsd-index-group">
-<section class="tsd-panel tsd-index-panel">
-<h3 class="tsd-index-heading uppercase">Index</h3>
-<section class="tsd-index-section">
-<h3 class="tsd-index-heading">Enumerations</h3>
-<div class="tsd-index-list"><a href="enums/EventSeverityEnum.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg><span>Event<wbr/>Severity<wbr/>Enum</span></a>
-<a href="enums/SentryExecutionEnvEnum.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg><span>Sentry<wbr/>Execution<wbr/>Env<wbr/>Enum</span></a>
-<a href="enums/SentryReleaseEnvEnum.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg><span>Sentry<wbr/>Release<wbr/>Env<wbr/>Enum</span></a>
-</div></section>
-<section class="tsd-index-section">
-<h3 class="tsd-index-heading">Classes</h3>
-<div class="tsd-index-list"><a href="classes/ExtraContextError.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Extra<wbr/>Context<wbr/>Error</span></a>
-</div></section>
-<section class="tsd-index-section">
-<h3 class="tsd-index-heading">Type Aliases</h3>
-<div class="tsd-index-list"><a href="types/EventDetails.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Event<wbr/>Details</span></a>
-<a href="types/EventExtraContext.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Event<wbr/>Extra<wbr/>Context</span></a>
-<a href="types/EventExtraContextCreator.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Event<wbr/>Extra<wbr/>Context<wbr/>Creator</span></a>
-<a href="types/HasExtraContext.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Has<wbr/>Extra<wbr/>Context</span></a>
-<a href="types/InfoEventSeverity.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Info<wbr/>Event<wbr/>Severity</span></a>
-<a href="types/InitSentryInput.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Init<wbr/>Sentry<wbr/>Input</span></a>
-<a href="types/RequiredSentryOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Required<wbr/>Sentry<wbr/>Options</span></a>
-<a href="types/SentryBrowserDep.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Sentry<wbr/>Browser<wbr/>Dep</span></a>
-<a href="types/SentryClientForLogging.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Sentry<wbr/>Client<wbr/>For<wbr/>Logging</span></a>
-<a href="types/SentryDep.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Sentry<wbr/>Dep</span></a>
-<a href="types/SentryDepByEnv.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Sentry<wbr/>Dep<wbr/>By<wbr/>Env</span></a>
-<a href="types/SentryNodeDep.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Sentry<wbr/>Node<wbr/>Dep</span></a>
-<a href="types/SentryTags.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>Sentry<wbr/>Tags</span></a>
-<a href="types/UserOverrides.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg><span>User<wbr/>Overrides</span></a>
-</div></section>
-<section class="tsd-index-section">
-<h3 class="tsd-index-heading">Variables</h3>
-<div class="tsd-index-list"><a href="variables/extraEventContextSymbol.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg><span>extra<wbr/>Event<wbr/>Context<wbr/>Symbol</span></a>
-<a href="variables/sendLog.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg><span>send<wbr/>Log</span></a>
-<a href="variables/sentryClientForLogging-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg><span>sentry<wbr/>Client<wbr/>For<wbr/>Logging</span></a>
-</div></section>
-<section class="tsd-index-section">
-<h3 class="tsd-index-heading">Functions</h3>
-<div class="tsd-index-list"><a href="functions/attachSentryTags.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>attach<wbr/>Sentry<wbr/>Tags</span></a>
-<a href="functions/baseInitSentry.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>base<wbr/>Init<wbr/>Sentry</span></a>
-<a href="functions/convertEventDetailsToSentryContext.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>convert<wbr/>Event<wbr/>Details<wbr/>To<wbr/>Sentry<wbr/>Context</span></a>
-<a href="functions/createSentryConfig.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>create<wbr/>Sentry<wbr/>Config</span></a>
-<a href="functions/createSentryHandler.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>create<wbr/>Sentry<wbr/>Handler</span></a>
-<a href="functions/extractEventSeverity.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>extract<wbr/>Event<wbr/>Severity</span></a>
-<a href="functions/extractExtraContentFromSymbol.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>extract<wbr/>Extra<wbr/>Content<wbr/>From<wbr/>Symbol</span></a>
-<a href="functions/extractExtraEventContext.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>extract<wbr/>Extra<wbr/>Event<wbr/>Context</span></a>
-<a href="functions/extractOriginalMessage.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>extract<wbr/>Original<wbr/>Message</span></a>
-<a href="functions/getConsoleMethodForSeverity.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>get<wbr/>Console<wbr/>Method<wbr/>For<wbr/>Severity</span></a>
-<a href="functions/handleError.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>handle<wbr/>Error</span></a>
-<a href="functions/hasExtraEventContext.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>has<wbr/>Extra<wbr/>Event<wbr/>Context</span></a>
-<a href="functions/processSentryEvent.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>process<wbr/>Sentry<wbr/>Event</span></a>
-<a href="functions/setSentryClientForLogging.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>set<wbr/>Sentry<wbr/>Client<wbr/>For<wbr/>Logging</span></a>
-<a href="functions/throwWithExtraContext.html" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-64"></use></svg><span>throw<wbr/>With<wbr/>Extra<wbr/>Context</span></a>
-</div></section></section></section></div>
+<ul class="tsd-breadcrumb">
+<li><a href="../modules.html">sentry-vir</a></li>
+<li><a href="extractExtraContentFromSymbol.html">extractExtraContentFromSymbol</a></li></ul>
+<h1>Function extractExtraContentFromSymbol</h1></div>
+<section class="tsd-panel">
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="extractExtraContentFromSymbol"><span class="tsd-kind-call-signature">extract<wbr/>Extra<wbr/>Content<wbr/>From<wbr/>Symbol</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">input</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../types/EventExtraContext.html" class="tsd-signature-type tsd-kind-type-alias">EventExtraContext</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><a href="#extractExtraContentFromSymbol" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Checks if extra event context has been injected into the input via extraEventContextSymbol and,
+if so, extracts it.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">input</span>: <span class="tsd-signature-type">unknown</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="../types/EventExtraContext.html" class="tsd-signature-type tsd-kind-type-alias">EventExtraContext</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/electrovir/sentry-vir/blob/bd07e0c/src/event-context/extra-event-context.ts#L23">src/event-context/extra-event-context.ts:23</a></li></ul></aside></li></ul></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -81,29 +46,29 @@
 <div class="tsd-theme-toggle">
 <h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div></div>
 <div class="site-menu">
-<nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1"></use></svg><span>sentry-vir - v0.2.1</span></a>
-<ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base=".">
-<li><a href="enums/EventSeverityEnum.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg>EventSeverityEnum</a></li>
-<li><a href="enums/SentryExecutionEnvEnum.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg>SentryExecutionEnvEnum</a></li>
-<li><a href="enums/SentryReleaseEnvEnum.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg>SentryReleaseEnvEnum</a></li>
-<li><a href="classes/ExtraContextError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg>ExtraContextError</a></li>
-<li><a href="types/EventDetails.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>EventDetails</a></li>
-<li><a href="types/EventExtraContext.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>EventExtraContext</a></li>
-<li><a href="types/EventExtraContextCreator.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>EventExtraContextCreator</a></li>
-<li><a href="types/HasExtraContext.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>HasExtraContext</a></li>
-<li><a href="types/InfoEventSeverity.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>InfoEventSeverity</a></li>
-<li><a href="types/InitSentryInput.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>InitSentryInput</a></li>
-<li><a href="types/RequiredSentryOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>RequiredSentryOptions</a></li>
-<li><a href="types/SentryBrowserDep.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryBrowserDep</a></li>
-<li><a href="types/SentryClientForLogging.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryClientForLogging</a></li>
-<li><a href="types/SentryDep.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryDep</a></li>
-<li><a href="types/SentryDepByEnv.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryDepByEnv</a></li>
-<li><a href="types/SentryNodeDep.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryNodeDep</a></li>
-<li><a href="types/SentryTags.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryTags</a></li>
-<li><a href="types/UserOverrides.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>UserOverrides</a></li>
-<li><a href="variables/extraEventContextSymbol.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg>extraEventContextSymbol</a></li>
-<li><a href="variables/sendLog.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg>sendLog</a></li>
-<li><a href="variables/sentryClientForLogging-1.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg>sentryClientForLogging</a></li>
+<nav class="tsd-navigation"><a href="../modules.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1"></use></svg><span>sentry-vir - v0.2.1</span></a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="..">
+<li><a href="../enums/EventSeverityEnum.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg>EventSeverityEnum</a></li>
+<li><a href="../enums/SentryExecutionEnvEnum.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg>SentryExecutionEnvEnum</a></li>
+<li><a href="../enums/SentryReleaseEnvEnum.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-8"></use></svg>SentryReleaseEnvEnum</a></li>
+<li><a href="../classes/ExtraContextError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg>ExtraContextError</a></li>
+<li><a href="../types/EventDetails.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>EventDetails</a></li>
+<li><a href="../types/EventExtraContext.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>EventExtraContext</a></li>
+<li><a href="../types/EventExtraContextCreator.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>EventExtraContextCreator</a></li>
+<li><a href="../types/HasExtraContext.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>HasExtraContext</a></li>
+<li><a href="../types/InfoEventSeverity.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>InfoEventSeverity</a></li>
+<li><a href="../types/InitSentryInput.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>InitSentryInput</a></li>
+<li><a href="../types/RequiredSentryOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>RequiredSentryOptions</a></li>
+<li><a href="../types/SentryBrowserDep.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryBrowserDep</a></li>
+<li><a href="../types/SentryClientForLogging.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryClientForLogging</a></li>
+<li><a href="../types/SentryDep.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryDep</a></li>
+<li><a href="../types/SentryDepByEnv.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryDepByEnv</a></li>
+<li><a href="../types/SentryNodeDep.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryNodeDep</a></li>
+<li><a href="../types/SentryTags.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>SentryTags</a></li>
+<li><a href="../types/UserOverrides.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2097152"></use></svg>UserOverrides</a></li>
+<li><a href="../variables/extraEventContextSymbol.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg>extraEventContextSymbol</a></li>
+<li><a href="../variables/sendLog.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg>sendLog</a></li>
+<li><a href="../variables/sentryClientForLogging-1.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-32"></use></svg>sentryClientForLogging</a></li>
 <li>Loading...</li></ul></nav></div></div></div>
 <div class="tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" rel="noopener" target="_blank">TypeDoc</a></p></div>
