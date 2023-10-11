@@ -5,13 +5,7 @@ import {sentryClientForLogging} from './sentry-client-for-logging';
 /** A list of tag names as keys and their values. Set a tag to undefined to clear it. */
 export type SentryTags = Parameters<typeof setTags>[0];
 
-/**
- * Set tags for all future Sentry event handling (errors and logs). This can be called before
- * setSentryClientForLogging has been called, as sentry-vir will buffer all events. However,
- * setSentryClientForLogging must be called once at some point to actually clear that buffer.
- *
- * Similar to handleError and sendLog.
- */
+/** Set tags for all future Sentry event handling (errors and logs). */
 export function attachSentryTags(tags: SentryTags) {
     try {
         if (!sentryClientForLogging) {

@@ -1,7 +1,7 @@
 import {SentryDep, SentryDepByEnv, SentryExecutionEnvEnum} from './env/execution-env';
 import {InitSentryInput} from './init-sentry/base-sentry-init';
+import {createSentryConfig} from './init-sentry/sentry-config';
 import {processSentryEvent} from './processing/event-processor';
-import {createSentryConfig} from './processing/sentry-config';
 
 /** A function which imports a Sentry dep. */
 export type SentryDepImporter = () => Promise<SentryDep>;

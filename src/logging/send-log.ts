@@ -9,13 +9,7 @@ import {EventSeverityEnum, InfoEventSeverity} from '../event-context/event-sever
 import {addPrematureEvent} from './premature-events';
 import {sentryClientForLogging} from './sentry-client-for-logging';
 
-/**
- * Send non-error events to Sentry. This can be called before setSentryClientForLogging has been
- * called, as sentry-vir will buffer all events. However, setSentryClientForLogging must be called
- * once at some point to actually clear that buffer.
- *
- * Similar to attachSentryTags and handleError.
- */
+/** Send non-error events to Sentry. */
 export const sendLog = {
     /** Sends an even to Sentry with debug severity. */
     [EventSeverityEnum.Debug]: wrapLogWithSeverity(EventSeverityEnum.Debug),

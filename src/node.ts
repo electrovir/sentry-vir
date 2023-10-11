@@ -1,7 +1,7 @@
 import {SentryExecutionEnvEnum} from './env/execution-env';
 import {InitSentryInput} from './init-sentry/base-sentry-init';
+import {createSentryConfig} from './init-sentry/sentry-config';
 import {processSentryEvent} from './processing/event-processor';
-import {createSentryConfig} from './processing/sentry-config';
 
 /**
  * Base Sentry init. Requires the Sentry module to already have been imported. Setup a sentry client

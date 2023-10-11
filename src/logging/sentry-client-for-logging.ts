@@ -7,11 +7,7 @@ export type SentryClientForLogging = Pick<
     SentryDep,
     'captureMessage' | 'captureException' | 'captureEvent' | 'setTags'
 >;
-/**
- * Internal sentry client used for logging. Use setSentryClientForLogging to set this. Allows
- * handleError, setTags, and sendLog to be called before the Sentry client has been setup yet, as
- * once this is set all events fired from those functions will get sent to Sentry.
- */
+/** Internal sentry client used for logging. */
 export let sentryClientForLogging: SentryClientForLogging | undefined;
 
 /**

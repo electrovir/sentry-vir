@@ -9,7 +9,7 @@ import {
     SentryNodeDep,
 } from '../env/execution-env';
 import {SentryReleaseEnvEnum} from '../env/release-env';
-import {createSentryHandler} from './handle-sentry-send';
+import {createSentryHandler} from '../processing/handle-sentry-send';
 
 /** Optional UserOverrides of Sentry config values. */
 export type UserOverrides = Omit<Partial<Options>, keyof RequiredSentryOptions> | undefined;

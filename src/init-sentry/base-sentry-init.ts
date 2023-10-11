@@ -2,8 +2,9 @@ import type {Options} from '@sentry/types';
 import {SentryDep, SentryExecutionEnvEnum} from '../env/execution-env';
 import {SentryReleaseEnvEnum} from '../env/release-env';
 import {EventExtraContextCreator} from '../event-context/event-context';
+import {setSentryClientForLogging} from '../logging/sentry-client-for-logging';
 import {processSentryEvent} from '../processing/event-processor';
-import {UserOverrides, createSentryConfig} from '../processing/sentry-config';
+import {UserOverrides, createSentryConfig} from './sentry-config';
 
 /** Configuration for initializing Sentry. */
 export type InitSentryInput = {
@@ -64,5 +65,6 @@ export async function baseInitSentry({
         processSentryEvent(event, hint, createUniversalContext),
     );
 
+    setSentryClientForLogging(sentryDep);
     return sentryDep;
 }

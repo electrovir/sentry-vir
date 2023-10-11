@@ -6,13 +6,7 @@ import {EventSeverityEnum} from '../event-context/event-severity';
 import {addPrematureEvent} from './premature-events';
 import {sentryClientForLogging} from './sentry-client-for-logging';
 
-/**
- * Record an error to Sentry without throwing it. This can be called before
- * setSentryClientForLogging has been called, as sentry-vir will buffer all events. However,
- * setSentryClientForLogging must be called once at some point to actually clear that buffer.
- *
- * Similar to attachSentryTags and sendLog.
- */
+/** Record an error to Sentry without throwing it. */
 export function handleError(error: unknown, extraContext?: EventExtraContext): string | undefined {
     try {
         if (!sentryClientForLogging) {
