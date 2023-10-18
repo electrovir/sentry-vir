@@ -1,6 +1,6 @@
 {
     "name": "sentry-vir",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "keywords": [
         "config",
         "helper",
@@ -39,24 +39,24 @@
     },
     "dependencies": {
         "@augment-vir/common": "^20.0.1",
-        "@sentry/browser": "^7.73.0",
-        "@sentry/core": "^7.73.0",
-        "@sentry/node": "^7.73.0",
-        "@sentry/types": "^7.73.0",
-        "type-fest": "^4.4.0"
+        "@sentry/browser": "^7.74.1",
+        "@sentry/core": "^7.74.1",
+        "@sentry/node": "^7.74.1",
+        "@sentry/types": "^7.74.1",
+        "type-fest": "^4.5.0"
     },
     "devDependencies": {
         "@augment-vir/browser-testing": "^20.0.1",
         "@open-wc/testing": "^3.2.0",
-        "@types/mocha": "^10.0.2",
-        "@web/dev-server-esbuild": "^0.4.1",
-        "@web/test-runner": "^0.17.1",
-        "@web/test-runner-commands": "^0.8.0",
+        "@types/mocha": "^10.0.3",
+        "@web/dev-server-esbuild": "^0.4.2",
+        "@web/test-runner": "^0.17.2",
+        "@web/test-runner-commands": "^0.8.1",
         "@web/test-runner-playwright": "^0.10.1",
         "@web/test-runner-visual-regression": "^0.8.2",
-        "cspell": "^7.3.7",
-        "dependency-cruiser": "^14.1.1",
-        "esbuild": "^0.19.4",
+        "cspell": "^7.3.8",
+        "dependency-cruiser": "^14.1.2",
+        "esbuild": "^0.19.5",
         "istanbul-smart-text-reporter": "^1.1.2",
         "markdown-code-example-inserter": "^0.3.2",
         "npm-check-updates": "~16.12.3",
@@ -69,6 +69,6 @@
         "prettier-plugin-sort-json": "^2.0.0",
         "prettier-plugin-toml": "^0.3.5",
         "typedoc": "^0.25.2",
-        "virmator": "^9.1.1"
+        "virmator": "^9.1.3"
     }
 }
