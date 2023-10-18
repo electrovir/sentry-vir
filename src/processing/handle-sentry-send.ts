@@ -1,4 +1,4 @@
-import {extractErrorMessage} from '@augment-vir/common';
+import {extractErrorMessage, isTruthy} from '@augment-vir/common';
 import type {EventHint} from '@sentry/browser';
 import type {ErrorEvent, TransactionEvent} from '@sentry/types';
 import {SentryReleaseEnvEnum} from '../env/release-env';
@@ -26,7 +26,8 @@ export function createSentryHandler(
             message,
             event.extra,
             {event, hint},
-        ];
+            hint.originalException,
+        ].filter(isTruthy);
 
         if (releaseEnv === SentryReleaseEnvEnum.Dev) {
             consoleMethod('Would have sent to Sentry:', ...logArgs);
