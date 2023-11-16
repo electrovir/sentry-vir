@@ -1,7 +1,5 @@
 import {SentryDep, SentryDepByEnv, SentryExecutionEnvEnum} from './env/execution-env';
-import {InitSentryInput} from './init-sentry/base-sentry-init';
-import {createSentryConfig} from './init-sentry/sentry-config';
-import {processSentryEvent} from './processing/event-processor';
+import {InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init';
 
 /** A function which imports a Sentry dep. */
 export type SentryDepImporter = () => Promise<SentryDep>;
@@ -42,23 +40,15 @@ export async function autoInitSentry({
 }: InitSentryInput) {
     const sentryDep = await getSentryByEnv(executionEnv);
 
-    const finalSentryConfig = await createSentryConfig(
-        executionEnv,
-        sentryDep,
-        {
-            dsn,
-            environment: releaseEnv,
-            release: releaseName,
-        },
-        sentryConfigOverrides,
+    await baseInitSentry({
+        dsn,
         releaseEnv,
-    );
-
-    sentryDep.init(finalSentryConfig);
-
-    sentryDep.addGlobalEventProcessor((event, hint) =>
-        processSentryEvent(event, hint, createUniversalContext),
-    );
+        releaseName,
+        sentryConfigOverrides,
+        createUniversalContext,
+        sentryDep,
+        executionEnv,
+    });
 
     return sentryDep;
 }

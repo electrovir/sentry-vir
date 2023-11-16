@@ -1,7 +1,5 @@
 import {SentryExecutionEnvEnum} from './env/execution-env';
-import {InitSentryInput} from './init-sentry/base-sentry-init';
-import {createSentryConfig} from './init-sentry/sentry-config';
-import {processSentryEvent} from './processing/event-processor';
+import {InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init';
 
 /**
  * Base Sentry init. Requires the Sentry module to already have been imported. Setup a sentry client
@@ -19,23 +17,15 @@ export async function initSentry({
 }: Omit<InitSentryInput, 'executionEnv'>) {
     const sentryDep = await import('@sentry/browser');
 
-    const finalSentryConfig = await createSentryConfig(
-        SentryExecutionEnvEnum.Browser,
-        sentryDep,
-        {
-            dsn,
-            environment: releaseEnv,
-            release: releaseName,
-        },
-        sentryConfigOverrides,
+    await baseInitSentry({
+        dsn,
         releaseEnv,
-    );
-
-    sentryDep.init(finalSentryConfig);
-
-    sentryDep.addGlobalEventProcessor((event, hint) =>
-        processSentryEvent(event, hint, createUniversalContext),
-    );
+        releaseName,
+        sentryConfigOverrides,
+        createUniversalContext,
+        sentryDep,
+        executionEnv: SentryExecutionEnvEnum.Browser,
+    });
 
     return sentryDep;
 }
