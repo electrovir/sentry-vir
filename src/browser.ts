@@ -1,5 +1,8 @@
+import type {SentryBrowserDep} from './env/execution-env';
 import {SentryExecutionEnvEnum} from './env/execution-env';
 import {InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init';
+
+export type Sentry = SentryBrowserDep;
 
 /**
  * Base Sentry init. Requires the Sentry module to already have been imported. Setup a sentry client
@@ -13,7 +16,7 @@ export async function initSentry({
     releaseName,
     sentryConfigOverrides,
     createUniversalContext,
-}: Omit<InitSentryInput, 'executionEnv'>) {
+}: Omit<InitSentryInput, 'executionEnv'>): Promise<Sentry> {
     const sentryDep = await import('@sentry/browser');
 
     await baseInitSentry({

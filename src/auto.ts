@@ -34,7 +34,7 @@ export async function autoInitSentry({
     releaseName,
     sentryConfigOverrides,
     createUniversalContext,
-}: InitSentryInput) {
+}: InitSentryInput): Promise<SentryDep> {
     const sentryDep = await getSentryByEnv(executionEnv);
 
     await baseInitSentry({
