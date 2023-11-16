@@ -1,5 +1,5 @@
-import {assertThrows} from '@augment-vir/browser-testing';
 import {assert} from '@open-wc/testing';
+import {assertThrows} from 'run-time-assertions';
 import {ExtraContextError, throwWithExtraContext} from './extra-context.error';
 import {hasExtraEventContext} from './extra-event-context';
 

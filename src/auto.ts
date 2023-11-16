@@ -5,7 +5,6 @@ import {InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init';
 export type SentryDepImporter = () => Promise<SentryDep>;
 
 /** The sentry dep import for each execution env. */
-/* c8 ignore next 6 */
 export const sentryDepByEnv: Record<SentryExecutionEnvEnum, SentryDepImporter> = {
     /** Sentry client for the browser. */
     [SentryExecutionEnvEnum.Browser]: () => import('@sentry/browser'),
@@ -13,7 +12,6 @@ export const sentryDepByEnv: Record<SentryExecutionEnvEnum, SentryDepImporter> =
     [SentryExecutionEnvEnum.Node]: () => import('@sentry/node'),
 };
 
-/* c8 ignore next 6 */
 /** Determine which Sentry client dependency to use and then import it. */
 async function getSentryByEnv<const Env extends SentryExecutionEnvEnum>(
     env: Env,
@@ -29,7 +27,6 @@ async function getSentryByEnv<const Env extends SentryExecutionEnvEnum>(
  *
  * To override any default sentry-vir settings, include them in the userConfig input.
  */
-/* c8 ignore next 30 */
 export async function autoInitSentry({
     executionEnv,
     dsn,

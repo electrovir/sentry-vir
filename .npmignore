@@ -5,6 +5,7 @@
 *.test.*
 *.tgz
 .*
+.not-committed/
 /Icon?
 /configs/
 /coverage/
@@ -13,7 +14,10 @@
 /src/
 /www-static/
 bash-scripts/
-docs-dist/
+dist-docs/
+generated-config-*
 index.html
 test-files/
+ts.out/
 tsconfig*.json
+tsconfig.tsbuildinfo

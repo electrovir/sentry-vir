@@ -1,4 +1,5 @@
-import {assertTypeOf, itCases} from '@augment-vir/browser-testing';
+import {itCases} from '@augment-vir/browser-testing';
+import {assertTypeOf} from 'run-time-assertions';
 import {EventExtraContext, convertEventDetailsToSentryContext} from './event-context';
 import {EventSeverityEnum} from './event-severity';
 

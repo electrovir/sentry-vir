@@ -37,7 +37,6 @@ export type InitSentryInput = {
  *
  * To override any default sentry-vir settings, include them in the userConfig input.
  */
-/* c8 ignore next */
 export async function baseInitSentry({
     dsn,
     releaseEnv,

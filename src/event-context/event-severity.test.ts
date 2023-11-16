@@ -1,6 +1,6 @@
-import {assertTypeOf} from '@augment-vir/browser-testing';
 import {getEnumTypedValues} from '@augment-vir/common';
 import {assert} from '@open-wc/testing';
+import {assertTypeOf} from 'run-time-assertions';
 import {
     EventSeverityEnum,
     InfoEventSeverity,

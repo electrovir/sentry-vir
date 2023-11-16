@@ -4,5 +4,5 @@
         "outDir": "./dist",
         "rootDir": "./src"
     },
-    "extends": "virmator/base-configs/base-tsconfig.json"
+    "extends": "virmator/base-configs/tsconfig.base.json"
 }

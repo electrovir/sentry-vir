@@ -1,5 +1,4 @@
 /** Used to determine which Sentry client dependency to import. */
-/* c8 ignore next */
 export enum SentryExecutionEnvEnum {
     Browser = 'browser',
     Node = 'node',

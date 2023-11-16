@@ -7,7 +7,6 @@ import {InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init';
  *
  * To override any default sentry-vir settings, include them in the userConfig input.
  */
-/* c8 ignore next */
 export async function initSentry({
     dsn,
     releaseEnv,
