@@ -1,5 +1,4 @@
 export * from './env/execution-env';
-export * from './env/release-env';
 export * from './event-context/event-context';
 export * from './event-context/event-severity';
 export * from './event-context/extra-context.error';

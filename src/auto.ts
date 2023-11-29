@@ -13,10 +13,10 @@ export const sentryDepByEnv: Record<SentryExecutionEnvEnum, SentryDepImporter> =
 };
 
 /** Determine which Sentry client dependency to use and then import it. */
-async function getSentryByEnv<const Env extends SentryExecutionEnvEnum>(
-    env: Env,
-): Promise<SentryDepByEnv<Env>> {
-    return (await sentryDepByEnv[env]()) as SentryDepByEnv<Env>;
+async function getSentryByEnv<const ExecutionEnv extends SentryExecutionEnvEnum>(
+    executionEnv: ExecutionEnv,
+): Promise<SentryDepByEnv<ExecutionEnv>> {
+    return (await sentryDepByEnv[executionEnv]()) as SentryDepByEnv<ExecutionEnv>;
 }
 
 /**
@@ -34,6 +34,7 @@ export async function autoInitSentry({
     releaseName,
     sentryConfigOverrides,
     createUniversalContext,
+    isDev,
 }: InitSentryInput): Promise<SentryDep> {
     const sentryDep = await getSentryByEnv(executionEnv);
 
@@ -45,6 +46,7 @@ export async function autoInitSentry({
         createUniversalContext,
         sentryDep,
         executionEnv,
+        isDev,
     });
 
     return sentryDep;

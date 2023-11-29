@@ -8,7 +8,6 @@ import {
     SentryExecutionEnvEnum,
     SentryNodeDep,
 } from '../env/execution-env';
-import {SentryReleaseEnvEnum} from '../env/release-env';
 import {createSentryHandler} from '../processing/handle-sentry-send';
 
 /** Optional UserOverrides of Sentry config values. */
@@ -17,21 +16,21 @@ export type UserOverrides = Omit<Partial<Options>, keyof RequiredSentryOptions> 
 export type RequiredSentryOptions = Pick<Required<Options>, 'dsn' | 'environment' | 'release'>;
 
 /** Creates the sentry config used internally by sentry-vir. */
-export async function createSentryConfig<const Env extends SentryExecutionEnvEnum>(
-    env: Env,
-    sentryDep: SentryDepByEnv<Env>,
+export async function createSentryConfig<const ExecutionEnv extends SentryExecutionEnvEnum>(
+    executionEnv: ExecutionEnv,
+    sentryDep: SentryDepByEnv<ExecutionEnv>,
     requiredSentryOptions: RequiredSentryOptions,
     userOverrides: UserOverrides,
-    releaseEnv: SentryReleaseEnvEnum,
+    isDev: boolean,
 ): Promise<SentryBrowserDep | SentryNodeDep> {
     const sharedSentryConfig: Partial<Options> = {
-        beforeSend: createSentryHandler(releaseEnv),
-        beforeSendTransaction: createSentryHandler(releaseEnv),
+        beforeSend: createSentryHandler(isDev),
+        beforeSendTransaction: createSentryHandler(isDev),
         defaultIntegrations: false,
         enabled: true,
     };
 
-    const envSentryConfig = sentryConfigByEnv[env](
+    const envSentryConfig = sentryConfigByEnv[executionEnv](
         /**
          * As cast needed because env and sentryDep are tightly coupled and there's not a good way
          * to check that they match with a type guard. This is okay, however, because the types of

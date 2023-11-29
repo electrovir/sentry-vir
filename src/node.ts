@@ -16,6 +16,7 @@ export async function initSentry({
     releaseName,
     sentryConfigOverrides,
     createUniversalContext,
+    isDev,
 }: Omit<InitSentryInput, 'executionEnv'>): Promise<SentryNodeDep> {
     const sentryDep = await import('@sentry/node');
 
@@ -27,6 +28,7 @@ export async function initSentry({
         createUniversalContext,
         sentryDep,
         executionEnv: SentryExecutionEnvEnum.Node,
+        isDev,
     });
 
     return sentryDep;

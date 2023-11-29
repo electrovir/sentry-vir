@@ -1,16 +1,12 @@
 import {extractErrorMessage, isTruthy} from '@augment-vir/common';
 import type {EventHint} from '@sentry/browser';
 import type {ErrorEvent, TransactionEvent} from '@sentry/types';
-import {SentryReleaseEnvEnum} from '../env/release-env';
 import {getConsoleMethodForSeverity} from '../event-context/event-severity';
 
 /** Creates a handler for Sentry events based on the given env. */
 export function createSentryHandler(
-    /**
-     * The release environment (dev vs prod). Determines whether events should be sent to sentry or
-     * not.
-     */
-    releaseEnv: SentryReleaseEnvEnum,
+    /** If in dev, events won't be sent to Sentry. They will only be logged in the console. */
+    isDev: boolean,
 ) {
     /** The actual function that gets called when handling Sentry events. */
     function handleSentrySend(
@@ -29,7 +25,7 @@ export function createSentryHandler(
             hint.originalException,
         ].filter(isTruthy);
 
-        if (releaseEnv === SentryReleaseEnvEnum.Dev) {
+        if (isDev) {
             consoleMethod('Would have sent to Sentry:', ...logArgs);
             return null;
         } else {

@@ -12,5 +12,5 @@ export type SentryNodeDep = typeof import('@sentry/node');
 export type SentryDep = SentryBrowserDep | SentryNodeDep;
 
 /** Pick a Sentry client dependency based on the given environment. */
-export type SentryDepByEnv<Env extends SentryExecutionEnvEnum> =
-    Env extends SentryExecutionEnvEnum.Browser ? SentryBrowserDep : SentryNodeDep;
+export type SentryDepByEnv<ExecutionEnv extends SentryExecutionEnvEnum> =
+    ExecutionEnv extends SentryExecutionEnvEnum.Browser ? SentryBrowserDep : SentryNodeDep;

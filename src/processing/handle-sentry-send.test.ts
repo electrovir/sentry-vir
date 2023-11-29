@@ -1,10 +1,9 @@
 import {itCases} from '@augment-vir/browser-testing';
-import {SentryReleaseEnvEnum} from '../env/release-env';
 import {createSentryHandler} from './handle-sentry-send';
 
 describe(createSentryHandler.name, () => {
-    const devHandler = createSentryHandler(SentryReleaseEnvEnum.Dev);
-    const prodHandler = createSentryHandler(SentryReleaseEnvEnum.Prod);
+    const devHandler = createSentryHandler(true);
+    const prodHandler = createSentryHandler(false);
 
     itCases(devHandler, [
         {

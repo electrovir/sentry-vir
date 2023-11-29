@@ -1,6 +1,5 @@
 import type {Options} from '@sentry/types';
 import {SentryDep, SentryExecutionEnvEnum} from '../env/execution-env';
-import {SentryReleaseEnvEnum} from '../env/release-env';
 import {EventExtraContextCreator} from '../event-context/event-context';
 import {setSentryClientForLogging} from '../logging/sentry-client-for-logging';
 import {processSentryEvent} from '../processing/event-processor';
@@ -8,11 +7,13 @@ import {UserOverrides, createSentryConfig} from './sentry-config';
 
 /** Configuration for initializing Sentry. */
 export type InitSentryInput = {
+    /** The release environment, rather than the execution environment (browser vs node). */
+    releaseEnv: string;
     /**
-     * The release environment, prod vs dev rather than browser vs node. In dev, events won't be
-     * sent to sentry. In both options, all events will be logged to the local console.
+     * In dev, events won't be sent to sentry. In either case, events will be logged to the local
+     * console.
      */
-    releaseEnv: SentryReleaseEnvEnum;
+    isDev: boolean;
     /**
      * The environment wherein the Sentry client will execute. Used to determine which Sentry client
      * to load: browser or node.
@@ -45,6 +46,7 @@ export async function baseInitSentry({
     createUniversalContext,
     sentryDep,
     executionEnv,
+    isDev,
 }: InitSentryInput & {sentryDep: SentryDep}) {
     const finalSentryConfig = await createSentryConfig(
         executionEnv,
@@ -55,7 +57,7 @@ export async function baseInitSentry({
             release: releaseName,
         },
         sentryConfigOverrides,
-        releaseEnv,
+        isDev,
     );
 
     sentryDep.init(finalSentryConfig);
