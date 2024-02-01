@@ -1,5 +1,5 @@
-import {isRuntimeTypeOf} from '@augment-vir/common';
 import {Event as SentryEvent} from '@sentry/types';
+import {isRunTimeType} from 'run-time-assertions';
 import {
     EventDetails,
     EventExtraContext,
@@ -51,7 +51,7 @@ function sendLogToSentry(
 
         const scopeContext = convertEventDetailsToSentryContext(eventDetails);
 
-        const eventId: string = isRuntimeTypeOf(logInfo, 'string')
+        const eventId: string = isRunTimeType(logInfo, 'string')
             ? sentryClientForLogging.captureMessage(logInfo, scopeContext)
             : sentryClientForLogging.captureEvent({
                   ...logInfo,
