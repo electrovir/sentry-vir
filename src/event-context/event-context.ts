@@ -16,12 +16,31 @@ export type EventDetails = {
     severity: EventSeverityEnum;
 };
 
+/** Options for creating contexts. Used internally. */
+export type ContextOptions = {
+    /**
+     * If true, this means the message was sent before Sentry was initialized, which slightly
+     * changes how the event is logged in the browser.
+     */
+    wasSentPrematurely: boolean;
+};
+
 /** Maps internal EventDetails type to Sentry's required type for event severity and extra context. */
 export function convertEventDetailsToSentryContext(
     eventDetails: EventDetails,
+    options: ContextOptions,
 ): Pick<ScopeContext, 'extra' | 'level'> {
+    const extra = {
+        ...(options.wasSentPrematurely
+            ? {
+                  wasSentPrematurely: true,
+              }
+            : {}),
+        ...eventDetails.extraContext,
+    };
+
     return {
-        extra: eventDetails.extraContext ?? {},
+        extra,
         level: eventDetails.severity,
     };
 }

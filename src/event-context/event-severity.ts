@@ -16,13 +16,14 @@ export type InfoEventSeverity =
     | EventSeverityEnum.Info
     | EventSeverityEnum.Warning;
 
-const consoleLogMethodsPerSeverity: Record<EventSeverityEnum, (typeof console)['log']> = {
+/** Maps severities to the console methods used to log them. */
+export const consoleLogMethodPerSeverity = {
     [EventSeverityEnum.Warning]: console.warn,
     [EventSeverityEnum.Info]: console.info,
     [EventSeverityEnum.Debug]: console.debug,
     [EventSeverityEnum.Fatal]: console.error,
     [EventSeverityEnum.Error]: console.error,
-};
+} as const satisfies Readonly<Record<EventSeverityEnum, (typeof console)['log']>>;
 
 /** Extracts the severity level from a sentry event while defaulting to an info level severity. */
 export function extractEventSeverity(event: SentryEvent): EventSeverityEnum {
@@ -31,14 +32,4 @@ export function extractEventSeverity(event: SentryEvent): EventSeverityEnum {
     }
 
     return event.level;
-}
-
-/**
- * Determines which console method should be used for local logging based on the given event's
- * severity.
- */
-export function getConsoleMethodForSeverity(event: SentryEvent) {
-    const severity = extractEventSeverity(event);
-
-    return consoleLogMethodsPerSeverity[severity];
 }

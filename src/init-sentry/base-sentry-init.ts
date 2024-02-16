@@ -61,8 +61,7 @@ export async function baseInitSentry({
     );
 
     sentryDep.init(finalSentryConfig);
-
-    sentryDep.addGlobalEventProcessor((event, hint) =>
+    sentryDep.addEventProcessor((event, hint) =>
         processSentryEvent(event, hint, createUniversalContext),
     );
 

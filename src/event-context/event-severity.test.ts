@@ -1,12 +1,6 @@
-import {getEnumTypedValues} from '@augment-vir/common';
 import {assert} from '@open-wc/testing';
 import {assertTypeOf} from 'run-time-assertions';
-import {
-    EventSeverityEnum,
-    InfoEventSeverity,
-    extractEventSeverity,
-    getConsoleMethodForSeverity,
-} from './event-severity';
+import {EventSeverityEnum, InfoEventSeverity, extractEventSeverity} from './event-severity';
 
 describe('InfoSeverity', () => {
     it('is a subset of EventSeverityEnum', () => {
@@ -21,17 +15,5 @@ describe(extractEventSeverity.name, () => {
 
     it('defaults to info level severity', () => {
         assert.strictEqual(extractEventSeverity({}), EventSeverityEnum.Info);
-    });
-});
-
-describe(getConsoleMethodForSeverity.name, () => {
-    it('has a console method for all severities', () => {
-        const severities = getEnumTypedValues(EventSeverityEnum);
-
-        assert.isAbove(severities.length, 1);
-
-        severities.forEach((severity) => {
-            assert.isDefined(getConsoleMethodForSeverity({level: severity}));
-        });
     });
 });

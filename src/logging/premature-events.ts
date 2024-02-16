@@ -1,7 +1,7 @@
 import {AnyFunction} from '@augment-vir/common';
 
 /** An event that was triggered before setSentryClientForLogging was called. */
-export type PrematureEvent<EntryPointFunction extends AnyFunction = AnyFunction> = {
+type PrematureEvent<EntryPointFunction extends AnyFunction = AnyFunction> = {
     callback: EntryPointFunction;
     inputs: Parameters<EntryPointFunction>;
 };
@@ -27,6 +27,9 @@ export function sendPrematureEvents() {
     }
 }
 
-export function addPrematureEvent(prematureEvent: PrematureEvent) {
-    prematureSentryEvents.push(prematureEvent);
+export function addPrematureEvent<EntryPointFunction extends AnyFunction = AnyFunction>(
+    callback: EntryPointFunction,
+    inputs: Parameters<EntryPointFunction>,
+) {
+    prematureSentryEvents.push({callback, inputs});
 }

@@ -7,9 +7,14 @@ describe(convertEventDetailsToSentryContext.name, () => {
     itCases(convertEventDetailsToSentryContext, [
         {
             it: 'converts empty extra context',
-            input: {
-                severity: EventSeverityEnum.Fatal,
-            },
+            inputs: [
+                {
+                    severity: EventSeverityEnum.Fatal,
+                },
+                {
+                    wasSentPrematurely: false,
+                },
+            ],
             expect: {
                 extra: {},
                 level: 'fatal',
@@ -17,17 +22,45 @@ describe(convertEventDetailsToSentryContext.name, () => {
         },
         {
             it: 'converts extra context',
-            input: {
-                severity: EventSeverityEnum.Fatal,
-                extraContext: {
-                    hi: 'what up',
-                    anotherEntry: 'data here',
+            inputs: [
+                {
+                    severity: EventSeverityEnum.Fatal,
+                    extraContext: {
+                        hi: 'what up',
+                        anotherEntry: 'data here',
+                    },
                 },
-            },
+                {
+                    wasSentPrematurely: false,
+                },
+            ],
             expect: {
                 extra: {
                     hi: 'what up',
                     anotherEntry: 'data here',
+                },
+                level: 'fatal',
+            },
+        },
+        {
+            it: 'handles wasSentPrematurely set to true',
+            inputs: [
+                {
+                    severity: EventSeverityEnum.Fatal,
+                    extraContext: {
+                        hi: 'what up',
+                        anotherEntry: 'data here',
+                    },
+                },
+                {
+                    wasSentPrematurely: true,
+                },
+            ],
+            expect: {
+                extra: {
+                    hi: 'what up',
+                    anotherEntry: 'data here',
+                    wasSentPrematurely: true,
                 },
                 level: 'fatal',
             },

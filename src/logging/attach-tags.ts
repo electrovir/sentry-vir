@@ -9,7 +9,7 @@ export type SentryTags = Parameters<typeof setTags>[0];
 export function attachSentryTags(tags: SentryTags) {
     try {
         if (!sentryClientForLogging) {
-            addPrematureEvent({callback: attachSentryTags, inputs: [tags]});
+            addPrematureEvent(attachSentryTags, [tags]);
             return;
         }
 

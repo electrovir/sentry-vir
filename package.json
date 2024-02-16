@@ -1,6 +1,6 @@
 {
     "name": "sentry-vir",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "keywords": [
         "config",
         "helper",
@@ -28,6 +28,7 @@
         "docs": "virmator docs",
         "format": "virmator format",
         "publish": "virmator publish \"npm run compile && npm run test:all\"",
+        "start": "virmator frontend",
         "test": "virmator test-web",
         "test:all": "concurrently --colors --kill-others-on-fail -c auto --names types,tests,spelling,format,docs,deps \"npm run test:types\" \"npm run test:coverage\" \"npm run test:spelling\" \"npm run test:format\" \"npm run test:docs\" \"npm run test:deps\"",
         "test:coverage": "npm run test coverage",
@@ -47,6 +48,7 @@
     },
     "devDependencies": {
         "@augment-vir/browser-testing": "^23.3.2",
+        "@augment-vir/node-js": "^23.3.2",
         "@open-wc/testing": "^4.0.0",
         "@types/mocha": "^10.0.6",
         "@web/dev-server-esbuild": "^1.0.2",
@@ -70,6 +72,9 @@
         "prettier-plugin-toml": "^2.0.1",
         "run-time-assertions": "^0.3.0",
         "typedoc": "^0.25.8",
-        "virmator": "^11.3.2"
+        "typescript": "^5.3.3",
+        "virmator": "^11.3.2",
+        "vite": "^4.5.2",
+        "vite-tsconfig-paths": "^4.3.1"
     }
 }
