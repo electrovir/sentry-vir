@@ -28,6 +28,7 @@ export async function createSentryConfig<const ExecutionEnv extends SentryExecut
         beforeSendTransaction: createSentryHandler<TransactionEvent>(isDev),
         defaultIntegrations: false,
         enabled: true,
+        maxValueLength: 10_000,
     };
 
     const envSentryConfig = sentryConfigByEnv[executionEnv](
