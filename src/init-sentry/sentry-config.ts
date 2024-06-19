@@ -1,7 +1,7 @@
 import {mergeDeep} from '@augment-vir/common';
-import type {BrowserOptions} from '@sentry/browser';
+import {type BrowserOptions} from '@sentry/browser';
 import type {NodeOptions} from '@sentry/node';
-import type {Options} from '@sentry/types';
+import {TransactionEvent, type ErrorEvent, type Options} from '@sentry/types';
 import {
     SentryBrowserDep,
     SentryDepByEnv,
@@ -22,10 +22,10 @@ export async function createSentryConfig<const ExecutionEnv extends SentryExecut
     requiredSentryOptions: RequiredSentryOptions,
     userOverrides: UserOverrides,
     isDev: boolean,
-): Promise<SentryBrowserDep | SentryNodeDep> {
+): Promise<BrowserOptions | NodeOptions> {
     const sharedSentryConfig: Partial<Options> = {
-        beforeSend: createSentryHandler(isDev),
-        beforeSendTransaction: createSentryHandler(isDev),
+        beforeSend: createSentryHandler<ErrorEvent>(isDev),
+        beforeSendTransaction: createSentryHandler<TransactionEvent>(isDev),
         defaultIntegrations: false,
         enabled: true,
     };
@@ -51,11 +51,11 @@ const sentryConfigByEnv = {
     [SentryExecutionEnvEnum.Browser](BrowserSentry: SentryBrowserDep): BrowserOptions {
         const options: BrowserOptions = {
             integrations: [
-                new BrowserSentry.HttpContext(),
-                new BrowserSentry.Dedupe(),
-                new BrowserSentry.InboundFilters(),
-                new BrowserSentry.FunctionToString(),
-                new BrowserSentry.GlobalHandlers(),
+                BrowserSentry.httpContextIntegration(),
+                BrowserSentry.dedupeIntegration(),
+                BrowserSentry.inboundFiltersIntegration(),
+                BrowserSentry.functionToStringIntegration(),
+                BrowserSentry.globalHandlersIntegration(),
             ],
         };
 
@@ -64,11 +64,11 @@ const sentryConfigByEnv = {
     [SentryExecutionEnvEnum.Node](NodeSentry: SentryNodeDep): NodeOptions {
         const options: BrowserOptions = {
             integrations: [
-                new NodeSentry.Integrations.OnUncaughtException(),
-                new NodeSentry.Integrations.OnUnhandledRejection(),
-                new NodeSentry.Integrations.ContextLines(),
-                new NodeSentry.Integrations.Context(),
-                new NodeSentry.Integrations.FunctionToString(),
+                NodeSentry.onUncaughtExceptionIntegration(),
+                NodeSentry.onUnhandledRejectionIntegration(),
+                NodeSentry.contextLinesIntegration(),
+                NodeSentry.nodeContextIntegration(),
+                NodeSentry.functionToStringIntegration(),
             ],
         };
 

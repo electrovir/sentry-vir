@@ -8,8 +8,13 @@ const indexTsFile = join(repoRoot, 'src', 'index.ts');
 export const typeDocConfig: Partial<TypeDocOptions> = {
     ...baseTypedocConfig,
     out: join(repoRoot, 'dist-docs'),
-    excludeExternals: true,
     entryPoints: [
         indexTsFile,
+    ],
+    intentionallyNotExported: [],
+    defaultCategory: 'Internal',
+    categoryOrder: [
+        'Main',
+        'Internal',
     ],
 };

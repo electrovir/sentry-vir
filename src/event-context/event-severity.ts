@@ -18,10 +18,15 @@ export type InfoEventSeverity =
 
 /** Maps severities to the console methods used to log them. */
 export const consoleLogMethodPerSeverity = {
+    /** Maps to `console.warn`. */
     [EventSeverityEnum.Warning]: console.warn,
+    /** Maps to `console.info`. */
     [EventSeverityEnum.Info]: console.info,
+    /** Maps to `console.debug`. */
     [EventSeverityEnum.Debug]: console.debug,
+    /** Maps to `console.error`. */
     [EventSeverityEnum.Fatal]: console.error,
+    /** Maps to `console.error`. */
     [EventSeverityEnum.Error]: console.error,
 } as const satisfies Readonly<Record<EventSeverityEnum, (typeof console)['log']>>;
 
