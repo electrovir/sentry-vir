@@ -1,9 +1,6 @@
-/**
- * If initializing sentry for node, instead import from 'sentry-vir/dist/esm/node' (for ESM) or
- * 'sentry-vir/dist/cjs/node' (for CommonJS).
- */
+/** If initializing sentry for node, instead import from 'sentry-vir/dist/node'. */
 import {SentryReleaseEnvEnum} from 'sentry-vir';
-import {initSentry} from 'sentry-vir/dist/esm/browser';
+import {initSentry} from 'sentry-vir/dist/browser';
 
 initSentry({
     dsn: 'Sentry project id provided by Sentry',

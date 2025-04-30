@@ -1,5 +1,5 @@
-import type {ScopeContext} from '@sentry/types';
-import {EventSeverityEnum} from './event-severity';
+import {type ScopeContext} from '@sentry/core';
+import {type EventSeverityEnum} from './event-severity.js';
 
 /**
  * Used for all extra context types. While keys must be strings, values can be whatever but must be

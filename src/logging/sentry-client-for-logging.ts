@@ -1,6 +1,6 @@
-import {MaybePromise} from '@augment-vir/common';
-import {SentryDep} from '../env/execution-env';
-import {sendPrematureEvents} from './premature-events';
+import {type MaybePromise} from '@augment-vir/common';
+import {type SentryDep} from '../env/execution-env.js';
+import {sendPrematureEvents} from './premature-events.js';
 
 /** The bare minimum Sentry client needed for logging events. */
 export type SentryClientForLogging = Pick<

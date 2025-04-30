@@ -1,6 +1,5 @@
-import type {SentryNodeDep} from './env/execution-env';
-import {SentryExecutionEnvEnum} from './env/execution-env';
-import {InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init';
+import {SentryExecutionEnvEnum, type SentryNodeDep} from './env/execution-env.js';
+import {type InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init.js';
 
 export type Sentry = SentryNodeDep;
 

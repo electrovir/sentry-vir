@@ -1,16 +1,16 @@
-import {Event as SentryEvent} from '@sentry/types';
-import {isRunTimeType} from 'run-time-assertions';
+import {check} from '@augment-vir/assert';
+import {type Event as SentryEvent} from '@sentry/core';
 import {
-    ContextOptions,
-    EventDetails,
-    EventExtraContext,
+    type ContextOptions,
+    type EventDetails,
+    type EventExtraContext,
     convertEventDetailsToSentryContext,
-} from '../event-context/event-context';
-import {EventSeverityEnum, InfoEventSeverity} from '../event-context/event-severity';
-import {extractOriginalMessage} from '../processing/event-processor';
-import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console';
-import {addPrematureEvent} from './premature-events';
-import {sentryClientForLogging} from './sentry-client-for-logging';
+} from '../event-context/event-context.js';
+import {EventSeverityEnum, type InfoEventSeverity} from '../event-context/event-severity.js';
+import {extractOriginalMessage} from '../processing/event-processor.js';
+import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console.js';
+import {addPrematureEvent} from './premature-events.js';
+import {sentryClientForLogging} from './sentry-client-for-logging.js';
 
 /** Send non-error events to Sentry. */
 export const sendLog = {
@@ -50,10 +50,10 @@ function sendLogToSentry(
     try {
         if (!sentryClientForLogging) {
             logToConsoleWithoutSentry(eventDetails.severity, LoggingState.NoSentryYet, {
-                message: isRunTimeType(logInfo, 'string')
+                message: check.isString(logInfo)
                     ? logInfo
                     : extractOriginalMessage(logInfo, undefined),
-                event: isRunTimeType(logInfo, 'string') ? undefined : logInfo,
+                event: check.isString(logInfo) ? undefined : logInfo,
                 extra: eventDetails.extraContext,
                 hint: undefined,
                 originalException: undefined,
@@ -68,7 +68,7 @@ function sendLogToSentry(
 
         const scopeContext = convertEventDetailsToSentryContext(eventDetails, options);
 
-        const eventId: string = isRunTimeType(logInfo, 'string')
+        const eventId: string = check.isString(logInfo)
             ? sentryClientForLogging.captureMessage(logInfo, scopeContext)
             : sentryClientForLogging.captureEvent({
                   ...logInfo,

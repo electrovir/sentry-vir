@@ -1,12 +1,12 @@
-import {isTruthy} from '@augment-vir/common';
-import {EventHint} from '@sentry/browser';
-import {Event, Extras} from '@sentry/types';
+import {check} from '@augment-vir/assert';
+import {type EventHint} from '@sentry/browser';
+import {type Event, type Extras} from '@sentry/core';
 import {
-    EventSeverityEnum,
+    type EventSeverityEnum,
     consoleLogMethodPerSeverity,
     extractEventSeverity,
-} from '../event-context/event-severity';
-import {extractOriginalMessage} from './event-processor';
+} from '../event-context/event-severity.js';
+import {extractOriginalMessage} from './event-processor.js';
 
 export enum LoggingState {
     Dev = 'dev',
@@ -53,12 +53,13 @@ export function logToConsoleWithoutSentry(
         logData.extra,
         Object.keys(eventLogArg).length ? eventLogArg : undefined,
         logData.originalException,
-    ].filter(isTruthy);
+    ].filter(check.isTruthy);
 
     if (loggingState === LoggingState.Dev) {
         consoleMethod('Would have sent to Sentry:', ...logArgs);
     } else if (loggingState === LoggingState.Prod) {
         consoleMethod('Sending to Sentry:', ...logArgs);
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     } else if (loggingState === LoggingState.NoSentryYet) {
         consoleMethod('Logging before Sentry init:', ...logArgs);
     }

@@ -1,7 +1,7 @@
-import {assert} from '@open-wc/testing';
-import {assertThrows} from 'run-time-assertions';
-import {ExtraContextError, throwWithExtraContext} from './extra-context.error';
-import {hasExtraEventContext} from './extra-event-context';
+import {assert} from '@augment-vir/assert';
+import {describe, it} from '@augment-vir/test';
+import {ExtraContextError, throwWithExtraContext} from './extra-context.error.js';
+import {hasExtraEventContext} from './extra-event-context.js';
 
 describe(ExtraContextError.name, () => {
     it('includes extra context', () => {
@@ -19,7 +19,7 @@ describe(ExtraContextError.name, () => {
 
 describe(throwWithExtraContext.name, () => {
     it('throws', () => {
-        assertThrows(() => throwWithExtraContext('nothing burger', {stuff: 'hi'}));
+        assert.throws(() => throwWithExtraContext('nothing burger', {stuff: 'hi'}));
     });
 
     it('includes extra context', () => {

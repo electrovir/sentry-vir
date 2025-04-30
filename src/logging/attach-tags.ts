@@ -1,6 +1,6 @@
-import type {setTags} from '@sentry/core';
-import {addPrematureEvent} from './premature-events';
-import {sentryClientForLogging} from './sentry-client-for-logging';
+import {type setTags} from '@sentry/core';
+import {addPrematureEvent} from './premature-events.js';
+import {sentryClientForLogging} from './sentry-client-for-logging.js';
 
 /** A list of tag names as keys and their values. Set a tag to undefined to clear it. */
 export type SentryTags = Parameters<typeof setTags>[0];

@@ -1,12 +1,12 @@
-import {itCases} from '@augment-vir/browser-testing';
 import {ensureType} from '@augment-vir/common';
-import {ExtraContextError} from './extra-context.error';
+import {describe, itCases} from '@augment-vir/test';
+import {ExtraContextError} from './extra-context.error.js';
 import {
     extractExtraEventContext,
     extraEventContextSymbol,
-    HasExtraContext,
+    type HasExtraContext,
     hasExtraEventContext,
-} from './extra-event-context';
+} from './extra-event-context.js';
 
 describe(extractExtraEventContext.name, () => {
     itCases(extractExtraEventContext, [

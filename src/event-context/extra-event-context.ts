@@ -1,6 +1,6 @@
-import {typedHasProperty} from '@augment-vir/common';
-import {Event, EventHint} from '@sentry/types';
-import {EventExtraContext} from './event-context';
+import {check} from '@augment-vir/assert';
+import {type Event, type EventHint} from '@sentry/core';
+import {type EventExtraContext} from './event-context.js';
 
 /**
  * Symbol used to attach extra event context to events. This is particularly useful for errors so
@@ -13,7 +13,7 @@ export type HasExtraContext = {[extraEventContextSymbol]: EventExtraContext};
 
 /** Type guard for whether any given input has extra event context. */
 export function hasExtraEventContext(input: unknown): input is HasExtraContext {
-    return typedHasProperty(input, extraEventContextSymbol);
+    return check.hasKey(input, extraEventContextSymbol);
 }
 
 /**
@@ -40,7 +40,7 @@ export function extractExtraEventContext(event: EventHint | Event): EventExtraCo
             : undefined;
     const fromCapture =
         'captureContext' in event && 'extra' in event.captureContext
-            ? event.captureContext?.extra
+            ? event.captureContext.extra
             : undefined;
 
     const combined: EventExtraContext = {

@@ -1,5 +1,5 @@
-import {itCases} from '@augment-vir/browser-testing';
-import {createSentryHandler} from './handle-sentry-send';
+import {describe, itCases} from '@augment-vir/test';
+import {createSentryHandler} from './handle-sentry-send.js';
 
 describe(createSentryHandler.name, () => {
     const devHandler = createSentryHandler(true);

@@ -1,6 +1,6 @@
-import type {EventHint} from '@sentry/browser';
-import type {ErrorEvent, TransactionEvent} from '@sentry/types';
-import {LoggingState, logToConsoleFromSentry} from './log-to-console';
+import {type EventHint} from '@sentry/browser';
+import {type ErrorEvent, type TransactionEvent} from '@sentry/core';
+import {LoggingState, logToConsoleFromSentry} from './log-to-console.js';
 
 /** Creates a handler for Sentry events based on the given env. */
 export function createSentryHandler<T extends TransactionEvent | ErrorEvent>(

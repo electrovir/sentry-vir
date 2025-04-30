@@ -1,13 +1,13 @@
 import {extractErrorMessage} from '@augment-vir/common';
 import {
-    ContextOptions,
-    EventExtraContext,
+    type ContextOptions,
+    type EventExtraContext,
     convertEventDetailsToSentryContext,
-} from '../event-context/event-context';
-import {EventSeverityEnum} from '../event-context/event-severity';
-import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console';
-import {addPrematureEvent} from './premature-events';
-import {sentryClientForLogging} from './sentry-client-for-logging';
+} from '../event-context/event-context.js';
+import {EventSeverityEnum} from '../event-context/event-severity.js';
+import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console.js';
+import {addPrematureEvent} from './premature-events.js';
+import {sentryClientForLogging} from './sentry-client-for-logging.js';
 
 /** Record an error to Sentry without throwing it. */
 export function handleError(error: unknown, extraContext?: EventExtraContext): string | undefined {

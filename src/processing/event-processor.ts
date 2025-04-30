@@ -1,11 +1,16 @@
 import {extractErrorMessage} from '@augment-vir/common';
-import {ErrorEvent, EventHint, Event as SentryEvent, TransactionEvent} from '@sentry/types';
 import {
-    EventExtraContextCreator,
+    type ErrorEvent,
+    type EventHint,
+    type Event as SentryEvent,
+    type TransactionEvent,
+} from '@sentry/core';
+import {
+    type EventExtraContextCreator,
     convertEventDetailsToSentryContext,
-} from '../event-context/event-context';
-import {extractEventSeverity} from '../event-context/event-severity';
-import {extractExtraEventContext} from '../event-context/extra-event-context';
+} from '../event-context/event-context.js';
+import {extractEventSeverity} from '../event-context/event-severity.js';
+import {extractExtraEventContext} from '../event-context/extra-event-context.js';
 
 /** Attach extra event data for a sentry event. */
 export function processSentryEvent(

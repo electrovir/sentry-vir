@@ -1,5 +1,5 @@
 import {SentryReleaseEnvEnum, handleError, sendLog, throwWithExtraContext} from 'sentry-vir';
-import {initSentry} from 'sentry-vir/dist/esm/browser';
+import {initSentry} from 'sentry-vir/dist/browser';
 
 sendLog.info('starting file');
 /** Extra log context can be added as the second argument to a sendLog method. */

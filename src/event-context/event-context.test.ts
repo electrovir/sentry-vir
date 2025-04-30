@@ -1,7 +1,7 @@
-import {itCases} from '@augment-vir/browser-testing';
-import {assertTypeOf} from 'run-time-assertions';
-import {EventExtraContext, convertEventDetailsToSentryContext} from './event-context';
-import {EventSeverityEnum} from './event-severity';
+import {assert} from '@augment-vir/assert';
+import {describe, it, itCases} from '@augment-vir/test';
+import {type EventExtraContext, convertEventDetailsToSentryContext} from './event-context.js';
+import {EventSeverityEnum} from './event-severity.js';
 
 describe(convertEventDetailsToSentryContext.name, () => {
     itCases(convertEventDetailsToSentryContext, [
@@ -70,6 +70,6 @@ describe(convertEventDetailsToSentryContext.name, () => {
 
 describe('EventExtraContext', () => {
     it('allows anything', () => {
-        assertTypeOf({entry: new RegExp('hello')}).toMatchTypeOf<EventExtraContext>();
+        assert.tsType({entry: new RegExp('hello')}).matches<EventExtraContext>();
     });
 });

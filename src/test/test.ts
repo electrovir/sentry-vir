@@ -1,6 +1,8 @@
-import {initSentry} from '../browser';
-import {handleError} from '../logging/handle-error';
-import {sendLog} from '../logging/send-log';
+/** Run this by running `npm start` and opening the started frontend in a browser. */
+
+import {initSentry} from '../browser.js';
+import {handleError} from '../logging/handle-error.js';
+import {sendLog} from '../logging/send-log.js';
 
 function testErrors() {
     sendLog.info('hello there');
@@ -22,4 +24,4 @@ async function main() {
     testErrors();
 }
 
-main();
+await main();

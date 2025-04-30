@@ -1,14 +1,14 @@
 import {mergeDeep} from '@augment-vir/common';
 import {type BrowserOptions} from '@sentry/browser';
-import type {NodeOptions} from '@sentry/node';
-import {TransactionEvent, type ErrorEvent, type Options} from '@sentry/types';
+import {type ErrorEvent, type Options, type TransactionEvent} from '@sentry/core';
+import {type NodeOptions} from '@sentry/node';
 import {
-    SentryBrowserDep,
-    SentryDepByEnv,
+    type SentryBrowserDep,
+    type SentryDepByEnv,
     SentryExecutionEnvEnum,
-    SentryNodeDep,
-} from '../env/execution-env';
-import {createSentryHandler} from '../processing/handle-sentry-send';
+    type SentryNodeDep,
+} from '../env/execution-env.js';
+import {createSentryHandler} from '../processing/handle-sentry-send.js';
 
 /** Optional UserOverrides of Sentry config values. */
 export type UserOverrides = Omit<Partial<Options>, keyof RequiredSentryOptions> | undefined;
@@ -16,7 +16,7 @@ export type UserOverrides = Omit<Partial<Options>, keyof RequiredSentryOptions> 
 export type RequiredSentryOptions = Pick<Required<Options>, 'dsn' | 'environment' | 'release'>;
 
 /** Creates the sentry config used internally by sentry-vir. */
-export async function createSentryConfig<const ExecutionEnv extends SentryExecutionEnvEnum>(
+export function createSentryConfig<const ExecutionEnv extends SentryExecutionEnvEnum>(
     executionEnv: ExecutionEnv,
     sentryDep: SentryDepByEnv<ExecutionEnv>,
     requiredSentryOptions: RequiredSentryOptions,
@@ -54,7 +54,7 @@ const sentryConfigByEnv = {
             integrations: [
                 BrowserSentry.httpContextIntegration(),
                 BrowserSentry.dedupeIntegration(),
-                BrowserSentry.inboundFiltersIntegration(),
+                BrowserSentry.eventFiltersIntegration(),
                 BrowserSentry.functionToStringIntegration(),
                 BrowserSentry.globalHandlersIntegration(),
             ],

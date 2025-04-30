@@ -1,5 +1,5 @@
-import {SentryDep, SentryDepByEnv, SentryExecutionEnvEnum} from './env/execution-env';
-import {InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init';
+import {type SentryDep, type SentryDepByEnv, SentryExecutionEnvEnum} from './env/execution-env.js';
+import {type InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init.js';
 
 /** A function which imports a Sentry dep. */
 export type SentryDepImporter = () => Promise<SentryDep>;

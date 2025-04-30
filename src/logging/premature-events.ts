@@ -1,4 +1,4 @@
-import {AnyFunction} from '@augment-vir/common';
+import {type AnyFunction} from '@augment-vir/common';
 
 /** An event that was triggered before setSentryClientForLogging was called. */
 type PrematureEvent<EntryPointFunction extends AnyFunction = AnyFunction> = {

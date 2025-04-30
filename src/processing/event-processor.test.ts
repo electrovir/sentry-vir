@@ -1,7 +1,7 @@
-import {itCases} from '@augment-vir/browser-testing';
-import {EventSeverityEnum} from '../event-context/event-severity';
-import {extraEventContextSymbol} from '../event-context/extra-event-context';
-import {processSentryEvent} from './event-processor';
+import {describe, itCases} from '@augment-vir/test';
+import {EventSeverityEnum} from '../event-context/event-severity.js';
+import {extraEventContextSymbol} from '../event-context/extra-event-context.js';
+import {processSentryEvent} from './event-processor.js';
 
 describe(processSentryEvent.name, () => {
     itCases(processSentryEvent, [

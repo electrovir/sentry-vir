@@ -1,12 +1,17 @@
 {
     "compilerOptions": {
-        "outDir": "dist/esm"
+        "outDir": "./dist/",
+        "rootDir": "./src/"
     },
     "exclude": [
-        "./configs",
-        "./dist",
+        "./configs/",
+        "./coverage/",
+        "./dist-*/",
         "./src/readme-examples",
-        "./node_modules"
+        "./dist/",
+        "./node_modules/",
+        "./test-files/",
+        "src/all-files-for-code-coverage.test.ts"
     ],
-    "extends": "./tsconfig.base.json"
+    "extends": "@virmator/compile/configs/tsconfig.base.json"
 }
