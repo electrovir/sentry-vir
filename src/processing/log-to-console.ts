@@ -1,4 +1,5 @@
-import {check} from '@augment-vir/assert';
+import {check, checkWrap} from '@augment-vir/assert';
+import {omitObjectKeys} from '@augment-vir/common';
 import {type EventHint} from '@sentry/browser';
 import {type Event, type Extras} from '@sentry/core';
 import {
@@ -43,16 +44,16 @@ export function logToConsoleWithoutSentry(
 ): void {
     const consoleMethod = consoleLogMethodPerSeverity[severity];
 
-    const eventLogArg = {
-        ...(logData.event ? {event: logData.event} : undefined),
-        ...(logData.hint ? {hint: logData.hint} : undefined),
-    };
+    const includedExtra: Extras | undefined = logData.extra
+        ? checkWrap.isNotEmpty(omitObjectKeys(logData.extra, ['originalFullMessage']))
+        : undefined;
 
     const logArgs = [
         logData.message,
-        logData.extra,
-        Object.keys(eventLogArg).length ? eventLogArg : undefined,
-        logData.originalException,
+        includedExtra,
+        logData.originalException instanceof Error
+            ? logData.originalException.stack
+            : logData.originalException,
     ].filter(check.isTruthy);
 
     if (loggingState === LoggingState.Dev) {
