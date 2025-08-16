@@ -21,11 +21,14 @@ export function createSentryConfig<const ExecutionEnv extends SentryExecutionEnv
     sentryDep: SentryDepByEnv<ExecutionEnv>,
     requiredSentryOptions: RequiredSentryOptions,
     userOverrides: UserOverrides,
-    isDev: boolean,
+    flagParams: {
+        isDev: boolean;
+        isSilent: boolean;
+    },
 ): Promise<BrowserOptions | NodeOptions> {
     const sharedSentryConfig: Partial<Options> = {
-        beforeSend: createSentryHandler<ErrorEvent>(isDev),
-        beforeSendTransaction: createSentryHandler<TransactionEvent>(isDev),
+        beforeSend: createSentryHandler<ErrorEvent>(flagParams),
+        beforeSendTransaction: createSentryHandler<TransactionEvent>(flagParams),
         defaultIntegrations: false,
         enabled: true,
         maxValueLength: 10_000,

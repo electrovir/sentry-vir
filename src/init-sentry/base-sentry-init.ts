@@ -24,6 +24,12 @@ export type InitSentryInput = {
     /** DSN needed for Sentry to hook up to your sentry project. */
     dsn: Required<Options>['dsn'];
     /**
+     * Set to `true` to disable all logging output to the console.
+     *
+     * @default false
+     */
+    silent?: boolean | undefined;
+    /**
      * Optionally create extra context to be included in all Sentry events. This will execute for
      * each event that is processed.
      */
@@ -47,6 +53,7 @@ export async function baseInitSentry({
     sentryDep,
     executionEnv,
     isDev,
+    silent,
 }: InitSentryInput & {sentryDep: SentryDep}) {
     const finalSentryConfig = await createSentryConfig(
         executionEnv,
@@ -57,7 +64,10 @@ export async function baseInitSentry({
             release: releaseName,
         },
         sentryConfigOverrides,
-        isDev,
+        {
+            isDev,
+            isSilent: !!silent,
+        },
     );
 
     sentryDep.init(finalSentryConfig);

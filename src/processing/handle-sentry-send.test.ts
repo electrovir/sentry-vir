@@ -2,8 +2,14 @@ import {describe, itCases} from '@augment-vir/test';
 import {createSentryHandler} from './handle-sentry-send.js';
 
 describe(createSentryHandler.name, () => {
-    const devHandler = createSentryHandler(true);
-    const prodHandler = createSentryHandler(false);
+    const devHandler = createSentryHandler({
+        isDev: true,
+        isSilent: false,
+    });
+    const prodHandler = createSentryHandler({
+        isDev: false,
+        isSilent: false,
+    });
 
     itCases(devHandler, [
         {

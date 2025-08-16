@@ -3,10 +3,15 @@ import {type ErrorEvent, type TransactionEvent} from '@sentry/core';
 import {LoggingState, logToConsoleFromSentry} from './log-to-console.js';
 
 /** Creates a handler for Sentry events based on the given env. */
-export function createSentryHandler<T extends TransactionEvent | ErrorEvent>(
+export function createSentryHandler<T extends TransactionEvent | ErrorEvent>({
+    isDev,
+    isSilent,
+}: {
     /** If in dev, events won't be sent to Sentry. They will only be logged in the console. */
-    isDev: boolean,
-) {
+    isDev: boolean;
+    /** If silent, events won't even get logged to the console. */
+    isSilent: boolean;
+}) {
     /** The actual function that gets called when handling Sentry events. */
     function handleSentrySend(
         /** The event from Sentry. */
@@ -15,7 +20,12 @@ export function createSentryHandler<T extends TransactionEvent | ErrorEvent>(
         hint: EventHint,
     ) {
         if (!event.extra?.wasSentPrematurely) {
-            logToConsoleFromSentry(event, hint, isDev ? LoggingState.Dev : LoggingState.Prod);
+            logToConsoleFromSentry(
+                event,
+                hint,
+                isDev ? LoggingState.Dev : LoggingState.Prod,
+                isSilent,
+            );
         }
         return isDev ? null : event;
     }
