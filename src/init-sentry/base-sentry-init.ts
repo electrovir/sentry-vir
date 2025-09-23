@@ -1,8 +1,10 @@
+import {type PartialWithUndefined} from '@augment-vir/common';
 import {type Options} from '@sentry/core';
 import {type SentryDep, type SentryExecutionEnvEnum} from '../env/execution-env.js';
 import {type EventExtraContextCreator} from '../event-context/event-context.js';
 import {setSentryClientForLogging} from '../logging/sentry-client-for-logging.js';
 import {processSentryEvent} from '../processing/event-processor.js';
+import {type ThrottleOptions} from '../processing/throttling.js';
 import {type UserOverrides, createSentryConfig} from './sentry-config.js';
 
 /** Configuration for initializing Sentry. */
@@ -36,6 +38,7 @@ export type InitSentryInput = {
     createUniversalContext?: EventExtraContextCreator | undefined;
     /** Optionally override any Sentry config properties that this package sets. */
     sentryConfigOverrides?: UserOverrides;
+    throttleOptions: Readonly<PartialWithUndefined<ThrottleOptions>> | undefined;
 };
 
 /**
@@ -54,21 +57,23 @@ export async function baseInitSentry({
     executionEnv,
     isDev,
     silent,
+    throttleOptions,
 }: InitSentryInput & {sentryDep: SentryDep}) {
-    const finalSentryConfig = await createSentryConfig(
+    const finalSentryConfig = await createSentryConfig({
         executionEnv,
         sentryDep,
-        {
+        requiredSentryOptions: {
             dsn,
             environment: releaseEnv,
             release: releaseName,
         },
-        sentryConfigOverrides,
-        {
+        userOverrides: sentryConfigOverrides,
+        flagParams: {
             isDev,
             isSilent: !!silent,
+            throttleOptions,
         },
-    );
+    });
 
     sentryDep.init(finalSentryConfig);
     sentryDep.addEventProcessor((event, hint) =>

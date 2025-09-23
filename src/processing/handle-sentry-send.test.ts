@@ -1,14 +1,20 @@
-import {describe, itCases} from '@augment-vir/test';
+import {assert} from '@augment-vir/assert';
+import {describe, it, itCases} from '@augment-vir/test';
+import {calculateRelativeDate, getNowInUtcTimezone} from 'date-vir';
+import {replaceObject} from '../augments/replace-object.js';
 import {createSentryHandler} from './handle-sentry-send.js';
+import {throttleCache} from './throttling.js';
 
 describe(createSentryHandler.name, () => {
     const devHandler = createSentryHandler({
         isDev: true,
         isSilent: false,
+        throttleOptions: undefined,
     });
     const prodHandler = createSentryHandler({
         isDev: false,
         isSilent: false,
+        throttleOptions: undefined,
     });
 
     itCases(devHandler, [
@@ -30,6 +36,20 @@ describe(createSentryHandler.name, () => {
             inputs: [
                 {
                     type: 'transaction',
+                    message: 'errorName',
+                },
+                {},
+            ],
+            expect: {
+                type: 'transaction',
+                message: 'errorName',
+            },
+        },
+        {
+            it: 'returns null on throttle',
+            inputs: [
+                {
+                    type: 'transaction',
                 },
                 {},
             ],
@@ -38,4 +58,16 @@ describe(createSentryHandler.name, () => {
             },
         },
     ]);
+
+    it('returns null on throttle', () => {
+        replaceObject(throttleCache, {
+            errorName: {
+                intervalCount: 1000,
+                intervalStartAt: calculateRelativeDate(getNowInUtcTimezone(), {hours: -2}),
+                throttleStartedAt: undefined,
+            },
+        });
+
+        assert.isNull(prodHandler({type: 'transaction', message: 'errorName'}, {}));
+    });
 });

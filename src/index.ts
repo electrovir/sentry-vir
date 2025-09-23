@@ -11,3 +11,4 @@ export * from './logging/send-log.js';
 export * from './logging/sentry-client-for-logging.js';
 export * from './processing/event-processor.js';
 export * from './processing/handle-sentry-send.js';
+export * from './processing/throttling.js';

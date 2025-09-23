@@ -19,6 +19,7 @@ async function main() {
         isDev: true,
         releaseEnv: 'dev',
         releaseName: 'dev-123',
+        throttleOptions: undefined,
     });
 
     testErrors();

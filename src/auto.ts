@@ -36,6 +36,7 @@ export async function autoInitSentry({
     createUniversalContext,
     isDev,
     silent,
+    throttleOptions,
 }: InitSentryInput): Promise<SentryDep> {
     const sentryDep = await getSentryByEnv(executionEnv);
 
@@ -49,6 +50,7 @@ export async function autoInitSentry({
         executionEnv,
         isDev,
         silent,
+        throttleOptions,
     });
 
     return sentryDep;

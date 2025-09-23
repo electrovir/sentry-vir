@@ -1,4 +1,4 @@
-import {mergeDeep} from '@augment-vir/common';
+import {mergeDeep, type PartialWithUndefined} from '@augment-vir/common';
 import {type BrowserOptions} from '@sentry/browser';
 import {type ErrorEvent, type Options, type TransactionEvent} from '@sentry/core';
 import {type NodeOptions} from '@sentry/node';
@@ -9,6 +9,7 @@ import {
     type SentryNodeDep,
 } from '../env/execution-env.js';
 import {createSentryHandler} from '../processing/handle-sentry-send.js';
+import {type ThrottleOptions} from '../processing/throttling.js';
 
 /** Optional UserOverrides of Sentry config values. */
 export type UserOverrides = Omit<Partial<Options>, keyof RequiredSentryOptions> | undefined;
@@ -16,16 +17,23 @@ export type UserOverrides = Omit<Partial<Options>, keyof RequiredSentryOptions> 
 export type RequiredSentryOptions = Pick<Required<Options>, 'dsn' | 'environment' | 'release'>;
 
 /** Creates the sentry config used internally by sentry-vir. */
-export function createSentryConfig<const ExecutionEnv extends SentryExecutionEnvEnum>(
-    executionEnv: ExecutionEnv,
-    sentryDep: SentryDepByEnv<ExecutionEnv>,
-    requiredSentryOptions: RequiredSentryOptions,
-    userOverrides: UserOverrides,
+export function createSentryConfig<const ExecutionEnv extends SentryExecutionEnvEnum>({
+    executionEnv,
+    sentryDep,
+    requiredSentryOptions,
+    userOverrides,
+    flagParams,
+}: {
+    executionEnv: ExecutionEnv;
+    sentryDep: SentryDepByEnv<ExecutionEnv>;
+    requiredSentryOptions: RequiredSentryOptions;
+    userOverrides: UserOverrides;
     flagParams: {
         isDev: boolean;
         isSilent: boolean;
-    },
-): Promise<BrowserOptions | NodeOptions> {
+        throttleOptions: Readonly<PartialWithUndefined<ThrottleOptions>> | undefined;
+    };
+}): Promise<BrowserOptions | NodeOptions> {
     const sharedSentryConfig: Partial<Options> = {
         beforeSend: createSentryHandler<ErrorEvent>(flagParams),
         beforeSendTransaction: createSentryHandler<TransactionEvent>(flagParams),

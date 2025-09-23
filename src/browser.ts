@@ -17,6 +17,7 @@ export async function initSentry({
     createUniversalContext,
     isDev,
     silent,
+    throttleOptions,
 }: Omit<InitSentryInput, 'executionEnv'>): Promise<Sentry> {
     const sentryDep = await import('@sentry/browser');
 
@@ -30,6 +31,7 @@ export async function initSentry({
         executionEnv: SentryExecutionEnvEnum.Browser,
         isDev,
         silent,
+        throttleOptions,
     });
 
     return sentryDep;
