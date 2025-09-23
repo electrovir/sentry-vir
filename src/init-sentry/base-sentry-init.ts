@@ -38,7 +38,7 @@ export type InitSentryInput = {
     createUniversalContext?: EventExtraContextCreator | undefined;
     /** Optionally override any Sentry config properties that this package sets. */
     sentryConfigOverrides?: UserOverrides;
-    throttleOptions: Readonly<PartialWithUndefined<ThrottleOptions>> | undefined;
+    throttleOptions?: Readonly<PartialWithUndefined<ThrottleOptions>> | undefined;
 };
 
 /**
