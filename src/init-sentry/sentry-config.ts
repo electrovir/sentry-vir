@@ -69,6 +69,7 @@ const sentryConfigByEnv = {
                 BrowserSentry.functionToStringIntegration(),
                 BrowserSentry.globalHandlersIntegration(),
             ],
+            normalizeDepth: 100,
         };
 
         return options;
@@ -82,6 +83,7 @@ const sentryConfigByEnv = {
                 NodeSentry.nodeContextIntegration(),
                 NodeSentry.functionToStringIntegration(),
             ],
+            normalizeDepth: 100,
         };
 
         return options;
