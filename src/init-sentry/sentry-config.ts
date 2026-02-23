@@ -34,12 +34,14 @@ export function createSentryConfig<const ExecutionEnv extends SentryExecutionEnv
         throttleOptions: Readonly<PartialWithUndefined<ThrottleOptions>> | undefined;
     };
 }): Promise<BrowserOptions | NodeOptions> {
-    const sharedSentryConfig: Partial<Options> = {
+    const sharedSentryConfig: PartialWithUndefined<Options> = {
         beforeSend: createSentryHandler<ErrorEvent>(flagParams),
         beforeSendTransaction: createSentryHandler<TransactionEvent>(flagParams),
         defaultIntegrations: false,
         enabled: true,
         maxValueLength: 10_000,
+        tracesSampleRate: undefined,
+        tracesSampler: undefined,
     };
 
     const envSentryConfig = sentryConfigByEnv[executionEnv](

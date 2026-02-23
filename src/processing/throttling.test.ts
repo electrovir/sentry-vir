@@ -1,7 +1,5 @@
-import {mapObjectValues} from '@augment-vir/common';
 import {describe, itCases} from '@augment-vir/test';
 import {calculateRelativeDate, type FullDate, getNowInUtcTimezone} from 'date-vir';
-import {replaceObject} from '../augments/replace-object.js';
 import {shouldThrottleEvent, throttleCache, type ThrottleCacheEntry} from './throttling.js';
 
 describe(shouldThrottleEvent.name, () => {
@@ -15,19 +13,30 @@ describe(shouldThrottleEvent.name, () => {
     };
 
     function testShouldThrottle(
-        initThrottleCache: typeof throttleCache,
+        initThrottleCache: Map<string, ThrottleCacheEntry>,
         ...params: Parameters<typeof shouldThrottleEvent>
     ) {
-        replaceObject(throttleCache, initThrottleCache);
+        throttleCache.clear();
+        for (const [
+            key,
+            value,
+        ] of initThrottleCache) {
+            throttleCache.set(key, value);
+        }
         const isThrottled = shouldThrottleEvent(...params);
+        const throttleCacheResult: Record<string, TestThrottleCacheEntry> = {};
+        for (const [
+            key,
+            value,
+        ] of throttleCache) {
+            throttleCacheResult[key] = {
+                intervalCount: value.intervalCount,
+                throttleStartedAt: !!value.throttleStartedAt,
+            };
+        }
         return {
             isThrottled,
-            throttleCache: mapObjectValues(throttleCache, (key, value) => {
-                return {
-                    intervalCount: value.intervalCount,
-                    throttleStartedAt: !!value.throttleStartedAt,
-                } satisfies TestThrottleCacheEntry;
-            }),
+            throttleCache: throttleCacheResult,
         };
     }
     const now = getNowInUtcTimezone();
@@ -36,7 +45,7 @@ describe(shouldThrottleEvent.name, () => {
         {
             it: 'does not throttle on empty cache',
             inputs: [
-                {},
+                new Map(),
                 {
                     message: 'errorName',
                 },
@@ -55,13 +64,16 @@ describe(shouldThrottleEvent.name, () => {
         {
             it: 'starts throttling when threshold surpassed for the first time',
             inputs: [
-                {
-                    errorName: {
-                        intervalCount: 100,
-                        intervalStartAt: now,
-                        throttleStartedAt: undefined,
-                    },
-                },
+                new Map([
+                    [
+                        'errorName',
+                        {
+                            intervalCount: 100,
+                            intervalStartAt: now,
+                            throttleStartedAt: undefined,
+                        },
+                    ],
+                ]),
                 {
                     message: 'errorName',
                 },
@@ -80,13 +92,16 @@ describe(shouldThrottleEvent.name, () => {
         {
             it: 'does nothing when disabled',
             inputs: [
-                {
-                    errorName: {
-                        intervalCount: 100,
-                        intervalStartAt: now,
-                        throttleStartedAt: undefined,
-                    },
-                },
+                new Map([
+                    [
+                        'errorName',
+                        {
+                            intervalCount: 100,
+                            intervalStartAt: now,
+                            throttleStartedAt: undefined,
+                        },
+                    ],
+                ]),
                 {
                     message: 'errorName',
                 },
@@ -108,13 +123,16 @@ describe(shouldThrottleEvent.name, () => {
         {
             it: 'resets when interval elapsed and threshold not surpassed',
             inputs: [
-                {
-                    errorName: {
-                        intervalCount: 10,
-                        intervalStartAt: calculateRelativeDate(now, {hours: -2}),
-                        throttleStartedAt: calculateRelativeDate(now, {days: -2}),
-                    },
-                },
+                new Map([
+                    [
+                        'errorName',
+                        {
+                            intervalCount: 10,
+                            intervalStartAt: calculateRelativeDate(now, {hours: -2}),
+                            throttleStartedAt: calculateRelativeDate(now, {days: -2}),
+                        },
+                    ],
+                ]),
                 {
                     message: 'errorName',
                 },
@@ -132,13 +150,16 @@ describe(shouldThrottleEvent.name, () => {
         {
             it: 'maintains throttle if interval is surpassed again',
             inputs: [
-                {
-                    errorName: {
-                        intervalCount: 200,
-                        intervalStartAt: calculateRelativeDate(now, {hours: -2}),
-                        throttleStartedAt: calculateRelativeDate(now, {days: -3}),
-                    },
-                },
+                new Map([
+                    [
+                        'errorName',
+                        {
+                            intervalCount: 200,
+                            intervalStartAt: calculateRelativeDate(now, {hours: -2}),
+                            throttleStartedAt: calculateRelativeDate(now, {days: -3}),
+                        },
+                    ],
+                ]),
                 {
                     message: 'errorName',
                 },
@@ -157,13 +178,16 @@ describe(shouldThrottleEvent.name, () => {
         {
             it: 'does not record a throttle log when disabled',
             inputs: [
-                {
-                    errorName: {
-                        intervalCount: 200,
-                        intervalStartAt: calculateRelativeDate(now, {hours: -10}),
-                        throttleStartedAt: undefined,
-                    },
-                },
+                new Map([
+                    [
+                        'errorName',
+                        {
+                            intervalCount: 200,
+                            intervalStartAt: calculateRelativeDate(now, {hours: -10}),
+                            throttleStartedAt: undefined,
+                        },
+                    ],
+                ]),
                 {
                     message: 'errorName',
                 },
@@ -185,7 +209,7 @@ describe(shouldThrottleEvent.name, () => {
         {
             it: 'uses hint when message is not provided on event',
             inputs: [
-                {},
+                new Map(),
                 {},
                 {
                     originalException: {
