@@ -10,7 +10,10 @@ import {
     convertEventDetailsToSentryContext,
 } from '../event-context/event-context.js';
 import {extractEventSeverity} from '../event-context/event-severity.js';
-import {extractExtraEventContext} from '../event-context/extra-event-context.js';
+import {
+    extractExtraEventContext,
+    extractExtraEventTags,
+} from '../event-context/extra-event-context.js';
 
 /** Attach extra event data for a sentry event. */
 export function processSentryEvent(
@@ -27,6 +30,11 @@ export function processSentryEvent(
         ...createUniversalContext?.(),
         originalFullMessage: event.message || extractErrorMessage(hint.originalException),
     };
+    const extraTags = {
+        ...extractExtraEventTags(hint),
+        ...extractExtraEventTags(event),
+    };
+
     const sentryContext = convertEventDetailsToSentryContext(
         {
             severity: extractEventSeverity(event),
@@ -37,6 +45,13 @@ export function processSentryEvent(
         },
     );
     Object.assign(event, sentryContext);
+
+    if (Object.keys(extraTags).length) {
+        event.tags = {
+            ...event.tags,
+            ...extraTags,
+        };
+    }
 
     return event;
 }

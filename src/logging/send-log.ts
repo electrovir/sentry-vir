@@ -2,8 +2,8 @@ import {check} from '@augment-vir/assert';
 import {type Event as SentryEvent} from '@sentry/core';
 import {
     type ContextOptions,
+    type EventContextAndTags,
     type EventDetails,
-    type EventExtraContext,
     convertEventDetailsToSentryContext,
 } from '../event-context/event-context.js';
 import {EventSeverityEnum, type InfoEventSeverity} from '../event-context/event-severity.js';
@@ -28,11 +28,12 @@ export const sendLog = {
 >;
 
 function wrapLogWithSeverity(severity: EventSeverityEnum) {
-    return (info: Parameters<typeof sendLogToSentry>[0], extraContext?: EventExtraContext) => {
+    return (info: Parameters<typeof sendLogToSentry>[0], eventOptions?: EventContextAndTags) => {
         return sendLogToSentry(
             info,
             {
-                extraContext,
+                extraContext: eventOptions?.context,
+                tags: eventOptions?.tags,
                 severity,
             },
             {

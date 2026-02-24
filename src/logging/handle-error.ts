@@ -1,7 +1,7 @@
 import {extractErrorMessage} from '@augment-vir/common';
 import {
     type ContextOptions,
-    type EventExtraContext,
+    type EventContextAndTags,
     convertEventDetailsToSentryContext,
 } from '../event-context/event-context.js';
 import {EventSeverityEnum} from '../event-context/event-severity.js';
@@ -10,15 +10,18 @@ import {addPrematureEvent} from './premature-events.js';
 import {sentryClientForLogging} from './sentry-client-for-logging.js';
 
 /** Record an error to Sentry without throwing it. */
-export function handleError(error: unknown, extraContext?: EventExtraContext): string | undefined {
-    return internalHandleError(error, extraContext, {
+export function handleError(
+    error: unknown,
+    eventOptions?: EventContextAndTags,
+): string | undefined {
+    return internalHandleError(error, eventOptions, {
         wasSentPrematurely: false,
     });
 }
 
 function internalHandleError(
     error: unknown,
-    extraContext: EventExtraContext | undefined,
+    eventOptions: EventContextAndTags | undefined,
     options: ContextOptions,
 ) {
     try {
@@ -26,13 +29,13 @@ function internalHandleError(
             logToConsoleWithoutSentry(EventSeverityEnum.Error, LoggingState.NoSentryYet, {
                 message: extractErrorMessage(error),
                 event: undefined,
-                extra: extraContext,
+                extra: eventOptions?.context,
                 hint: undefined,
                 originalException: error,
             });
             addPrematureEvent(internalHandleError, [
                 error,
-                extraContext,
+                eventOptions,
                 {wasSentPrematurely: true},
             ]);
             return undefined;
@@ -40,7 +43,8 @@ function internalHandleError(
 
         const scopeContext = convertEventDetailsToSentryContext(
             {
-                extraContext,
+                extraContext: eventOptions?.context,
+                tags: eventOptions?.tags,
                 severity: EventSeverityEnum.Error,
             },
             options,

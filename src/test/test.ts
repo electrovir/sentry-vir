@@ -12,7 +12,7 @@ function testErrors() {
 declare const INJECTED_VITE_SECRETS: Readonly<{dsn: string}>;
 
 async function main() {
-    sendLog.info('hello there 1', {context: 'hi'});
+    sendLog.info('hello there 1', {context: {extra: 'hi'}});
     handleError(new Error('blah'));
     await initSentry({
         dsn: INJECTED_VITE_SECRETS.dsn,

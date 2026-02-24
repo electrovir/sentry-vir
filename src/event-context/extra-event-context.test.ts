@@ -3,16 +3,20 @@ import {describe, itCases} from '@augment-vir/test';
 import {ExtraContextError} from './extra-context.error.js';
 import {
     extractExtraEventContext,
+    extractExtraEventTags,
     extraEventContextSymbol,
-    type HasExtraContext,
+    extraEventTagsSymbol,
     hasExtraEventContext,
+    hasExtraEventTags,
+    type HasExtraContext,
+    type HasExtraTags,
 } from './extra-event-context.js';
 
 describe(extractExtraEventContext.name, () => {
     itCases(extractExtraEventContext, [
         {
             it: 'grabs context from extra context error',
-            input: new ExtraContextError('test message', {otherStuff: 'hi'}),
+            input: new ExtraContextError('test message', {context: {otherStuff: 'hi'}}),
             expect: {
                 otherStuff: 'hi',
             },
@@ -50,8 +54,13 @@ describe(hasExtraEventContext.name, () => {
     itCases(hasExtraEventContext, [
         {
             it: 'finds context in an extra context error',
-            input: new ExtraContextError('test message', {otherStuff: 'hi'}),
+            input: new ExtraContextError('test message', {context: {otherStuff: 'hi'}}),
             expect: true,
+        },
+        {
+            it: 'finds no context',
+            input: new ExtraContextError('test message', {}),
+            expect: false,
         },
         {
             it: 'finds context in an ordinary object',
@@ -60,6 +69,57 @@ describe(hasExtraEventContext.name, () => {
         },
         {
             it: 'fails to find context in an object that lacks it',
+            input: {stuff: 'hi'},
+            expect: false,
+        },
+    ]);
+});
+
+describe(extractExtraEventTags.name, () => {
+    itCases(extractExtraEventTags, [
+        {
+            it: 'grabs tags from extra context error',
+            input: new ExtraContextError('test message', {tags: {region: 'us-east'}}),
+            expect: {
+                region: 'us-east',
+            },
+        },
+        {
+            it: 'grabs tags from an ordinary object',
+            input: {[extraEventTagsSymbol]: {env: 'prod'}} as any,
+            expect: {
+                env: 'prod',
+            },
+        },
+        {
+            it: 'grabs tags from hint exception',
+            input: {originalException: {[extraEventTagsSymbol]: {version: 42}}},
+            expect: {
+                version: 42,
+            },
+        },
+        {
+            it: 'returns undefined if no tags found',
+            input: {},
+            expect: undefined,
+        },
+    ]);
+});
+
+describe(hasExtraEventTags.name, () => {
+    itCases(hasExtraEventTags, [
+        {
+            it: 'finds tags in an extra context error',
+            input: new ExtraContextError('test message', {tags: {region: 'us-east'}}),
+            expect: true,
+        },
+        {
+            it: 'finds tags in an ordinary object',
+            input: ensureType<HasExtraTags>({[extraEventTagsSymbol]: {env: 'prod'}}),
+            expect: true,
+        },
+        {
+            it: 'fails to find tags in an object that lacks them',
             input: {stuff: 'hi'},
             expect: false,
         },

@@ -1,3 +1,4 @@
+import {type JsonCompatibleObject, type PartialWithUndefined} from '@augment-vir/common';
 import {type ScopeContext} from '@sentry/core';
 import {type EventSeverityEnum} from './event-severity.js';
 
@@ -5,7 +6,19 @@ import {type EventSeverityEnum} from './event-severity.js';
  * Used for all extra context types. While keys must be strings, values can be whatever but must be
  * JSON compatible.
  */
-export type EventExtraContext = Record<string, unknown>;
+export type EventExtraContext = JsonCompatibleObject;
+
+/** Allowed tag value types for Sentry event tags. */
+export type EventTags = Record<string, string | number | boolean>;
+
+/**
+ * Combined context and tags parameter used for event logging functions. Both properties are
+ * optional.
+ */
+export type EventContextAndTags = PartialWithUndefined<{
+    context: EventExtraContext;
+    tags: EventTags;
+}>;
 
 /** Function that generates extra event context. */
 export type EventExtraContextCreator = () => EventExtraContext;
@@ -13,6 +26,7 @@ export type EventExtraContextCreator = () => EventExtraContext;
 /** Event details before getting sent to Sentry. */
 export type EventDetails = {
     extraContext?: EventExtraContext | undefined;
+    tags?: EventTags | undefined;
     severity: EventSeverityEnum;
 };
 
@@ -25,11 +39,14 @@ export type ContextOptions = {
     wasSentPrematurely: boolean;
 };
 
-/** Maps internal EventDetails type to Sentry's required type for event severity and extra context. */
+/**
+ * Maps internal EventDetails type to Sentry's required type for event severity, extra context, and
+ * tags.
+ */
 export function convertEventDetailsToSentryContext(
     eventDetails: EventDetails,
     options: ContextOptions,
-): Pick<ScopeContext, 'extra' | 'level'> {
+): Pick<ScopeContext, 'extra' | 'level'> & Partial<Pick<ScopeContext, 'tags'>> {
     const extra = {
         ...(options.wasSentPrematurely
             ? {
@@ -42,5 +59,6 @@ export function convertEventDetailsToSentryContext(
     return {
         extra,
         level: eventDetails.severity,
+        ...(eventDetails.tags ? {tags: eventDetails.tags} : {}),
     };
 }
