@@ -1,12 +1,9 @@
-import {type setTags} from '@sentry/core';
+import {type EventTags} from '../event-context/event-context.js';
 import {addPrematureEvent} from './premature-events.js';
 import {sentryClientForLogging} from './sentry-client-for-logging.js';
 
-/** A list of tag names as keys and their values. Set a tag to undefined to clear it. */
-export type SentryTags = Parameters<typeof setTags>[0];
-
 /** Set tags for all future Sentry event handling (errors and logs). */
-export function attachSentryTags(tags: SentryTags) {
+export function attachSentryTags(tags: EventTags) {
     try {
         if (!sentryClientForLogging) {
             addPrematureEvent(attachSentryTags, [tags]);

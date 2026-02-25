@@ -1,5 +1,5 @@
 import {type JsonCompatibleObject, type PartialWithUndefined} from '@augment-vir/common';
-import {type ScopeContext} from '@sentry/core';
+import {type ScopeContext, type setTags} from '@sentry/core';
 import {type EventSeverityEnum} from './event-severity.js';
 
 /**
@@ -9,7 +9,7 @@ import {type EventSeverityEnum} from './event-severity.js';
 export type EventExtraContext = JsonCompatibleObject;
 
 /** Allowed tag value types for Sentry event tags. */
-export type EventTags = Record<string, string | number | boolean>;
+export type EventTags = Parameters<typeof setTags>[0];
 
 /**
  * Combined context and tags parameter used for event logging functions. Both properties are
