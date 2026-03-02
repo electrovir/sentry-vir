@@ -63,9 +63,13 @@ export type ThrottleOptions = {
  */
 export const defaultThrottleOptions: ThrottleOptions = {
     disableThrottling: false,
-    thresholdInterval: {hours: 1},
+    thresholdInterval: {
+        hours: 1,
+    },
     disableThrottleLog: false,
-    throttleCooldown: {days: 1},
+    throttleCooldown: {
+        days: 1,
+    },
     throttleThreshold: 50,
 };
 

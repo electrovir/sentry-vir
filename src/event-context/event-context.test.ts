@@ -115,7 +115,17 @@ describe(convertEventDetailsToSentryContext.name, () => {
 
 describe('EventExtraContext', () => {
     it('allows JSON compatible objects', () => {
-        assert.tsType({entry: 'hello'}).matches<EventExtraContext>();
-        assert.tsType({nested: {value: 42}}).matches<EventExtraContext>();
+        assert
+            .tsType({
+                entry: 'hello',
+            })
+            .matches<EventExtraContext>();
+        assert
+            .tsType({
+                nested: {
+                    value: 42,
+                },
+            })
+            .matches<EventExtraContext>();
     });
 });

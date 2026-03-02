@@ -36,7 +36,9 @@ function internalHandleError(
             addPrematureEvent(internalHandleError, [
                 error,
                 eventOptions,
-                {wasSentPrematurely: true},
+                {
+                    wasSentPrematurely: true,
+                },
             ]);
             return undefined;
         }

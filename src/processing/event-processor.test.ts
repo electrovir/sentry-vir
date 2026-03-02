@@ -17,7 +17,9 @@ describe(processSentryEvent.name, () => {
                 },
                 {
                     originalException: {
-                        [extraEventContextSymbol]: {myExtraContext: 'hello'},
+                        [extraEventContextSymbol]: {
+                            myExtraContext: 'hello',
+                        },
                     },
                 },
             ],
@@ -39,11 +41,15 @@ describe(processSentryEvent.name, () => {
                 {
                     originalException: {
                         message: 'original message',
-                        [extraEventContextSymbol]: {myExtraContext: 'hello'},
+                        [extraEventContextSymbol]: {
+                            myExtraContext: 'hello',
+                        },
                     },
                 },
                 () => {
-                    return {moreData: 'hello 2'};
+                    return {
+                        moreData: 'hello 2',
+                    };
                 },
             ],
             expect: {
@@ -65,8 +71,13 @@ describe(processSentryEvent.name, () => {
                 },
                 {
                     originalException: {
-                        [extraEventContextSymbol]: {myContext: 'data'},
-                        [extraEventTagsSymbol]: {region: 'us-east', version: 3},
+                        [extraEventContextSymbol]: {
+                            myContext: 'data',
+                        },
+                        [extraEventTagsSymbol]: {
+                            region: 'us-east',
+                            version: 3,
+                        },
                     },
                 },
             ],
@@ -92,7 +103,9 @@ describe(processSentryEvent.name, () => {
                 },
                 {
                     originalException: {
-                        [extraEventContextSymbol]: {myContext: 'data'},
+                        [extraEventContextSymbol]: {
+                            myContext: 'data',
+                        },
                     },
                 },
             ],

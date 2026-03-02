@@ -77,7 +77,9 @@ function sendLogToSentry(
             addPrematureEvent(sendLogToSentry, [
                 resolvedLogInfo,
                 eventDetails,
-                {wasSentPrematurely: true},
+                {
+                    wasSentPrematurely: true,
+                },
             ]);
             return undefined;
         }

@@ -59,6 +59,10 @@ export function convertEventDetailsToSentryContext(
     return {
         extra,
         level: eventDetails.severity,
-        ...(eventDetails.tags ? {tags: eventDetails.tags} : {}),
+        ...(eventDetails.tags
+            ? {
+                  tags: eventDetails.tags,
+              }
+            : {}),
     };
 }

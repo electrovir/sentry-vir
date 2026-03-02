@@ -31,5 +31,8 @@ export function addPrematureEvent<EntryPointFunction extends AnyFunction = AnyFu
     callback: EntryPointFunction,
     inputs: Parameters<EntryPointFunction>,
 ) {
-    prematureSentryEvents.push({callback, inputs});
+    prematureSentryEvents.push({
+        callback,
+        inputs,
+    });
 }

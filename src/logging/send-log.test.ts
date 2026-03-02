@@ -88,7 +88,9 @@ describe('sendLog', () => {
         const {mockClient, capturedMessages, capturedEvents} = createMockSentryClient();
         await setSentryClientForLogging(mockClient);
 
-        sendLog.warning({message: 'raw event message'});
+        sendLog.warning({
+            message: 'raw event message',
+        });
 
         assert.isLengthExactly(capturedMessages, 0);
         assert.isLengthExactly(capturedEvents, 1);

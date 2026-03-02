@@ -62,10 +62,20 @@ describe(createSentryHandler.name, () => {
         throttleCache.clear();
         throttleCache.set('errorName', {
             intervalCount: 1000,
-            intervalStartAt: calculateRelativeDate(getNowInUtcTimezone(), {hours: -2}),
+            intervalStartAt: calculateRelativeDate(getNowInUtcTimezone(), {
+                hours: -2,
+            }),
             throttleStartedAt: undefined,
         });
 
-        assert.isNull(prodHandler({type: 'transaction', message: 'errorName'}, {}));
+        assert.isNull(
+            prodHandler(
+                {
+                    type: 'transaction',
+                    message: 'errorName',
+                },
+                {},
+            ),
+        );
     });
 });

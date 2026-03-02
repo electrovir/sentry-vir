@@ -19,17 +19,37 @@ describe(ExtraContextError.name, () => {
     });
 
     it('includes extra tags', () => {
-        assert.isTrue(hasExtraEventTags(new ExtraContextError('yo', {tags: {region: 'us-east'}})));
+        assert.isTrue(
+            hasExtraEventTags(
+                new ExtraContextError('yo', {
+                    tags: {
+                        region: 'us-east',
+                    },
+                }),
+            ),
+        );
     });
 
     it('does not include tags when none are provided', () => {
-        assert.isFalse(hasExtraEventTags(new ExtraContextError('yo', {context: {data: 'hi'}})));
+        assert.isFalse(
+            hasExtraEventTags(
+                new ExtraContextError('yo', {
+                    context: {
+                        data: 'hi',
+                    },
+                }),
+            ),
+        );
     });
 
     it('includes both context and tags', () => {
         const error = new ExtraContextError('yo', {
-            context: {data: 'hi'},
-            tags: {version: 5},
+            context: {
+                data: 'hi',
+            },
+            tags: {
+                version: 5,
+            },
         });
         assert.isTrue(hasExtraEventContext(error));
         assert.isTrue(hasExtraEventTags(error));
@@ -38,12 +58,22 @@ describe(ExtraContextError.name, () => {
 
 describe(throwWithExtraContext.name, () => {
     it('throws', () => {
-        assert.throws(() => throwWithExtraContext('nothing burger', {context: {stuff: 'hi'}}));
+        assert.throws(() =>
+            throwWithExtraContext('nothing burger', {
+                context: {
+                    stuff: 'hi',
+                },
+            }),
+        );
     });
 
     it('includes extra context', () => {
         try {
-            throwWithExtraContext('another attempt', {context: {data: 'hello'}});
+            throwWithExtraContext('another attempt', {
+                context: {
+                    data: 'hello',
+                },
+            });
             throw new Error('did not throw');
         } catch (error) {
             assert.isTrue(hasExtraEventContext(error));
@@ -52,7 +82,11 @@ describe(throwWithExtraContext.name, () => {
 
     it('includes extra tags', () => {
         try {
-            throwWithExtraContext('tag test', {tags: {env: 'prod'}});
+            throwWithExtraContext('tag test', {
+                tags: {
+                    env: 'prod',
+                },
+            });
             throw new Error('did not throw');
         } catch (error) {
             assert.isTrue(hasExtraEventTags(error));
@@ -62,8 +96,13 @@ describe(throwWithExtraContext.name, () => {
     it('includes both context and tags', () => {
         try {
             throwWithExtraContext('both test', {
-                context: {data: 'hello'},
-                tags: {env: 'prod', count: 10},
+                context: {
+                    data: 'hello',
+                },
+                tags: {
+                    env: 'prod',
+                    count: 10,
+                },
             });
             throw new Error('did not throw');
         } catch (error) {

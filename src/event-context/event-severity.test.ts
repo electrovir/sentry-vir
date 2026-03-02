@@ -10,7 +10,12 @@ describe('InfoSeverity', () => {
 
 describe(extractEventSeverity.name, () => {
     it('extracts the severity level', () => {
-        assert.strictEquals(extractEventSeverity({level: 'warning'}), EventSeverityEnum.Warning);
+        assert.strictEquals(
+            extractEventSeverity({
+                level: 'warning',
+            }),
+            EventSeverityEnum.Warning,
+        );
     });
 
     it('defaults to info level severity', () => {

@@ -128,8 +128,12 @@ describe(shouldThrottleEvent.name, () => {
                         'errorName',
                         {
                             intervalCount: 10,
-                            intervalStartAt: calculateRelativeDate(now, {hours: -2}),
-                            throttleStartedAt: calculateRelativeDate(now, {days: -2}),
+                            intervalStartAt: calculateRelativeDate(now, {
+                                hours: -2,
+                            }),
+                            throttleStartedAt: calculateRelativeDate(now, {
+                                days: -2,
+                            }),
                         },
                     ],
                 ]),
@@ -155,8 +159,12 @@ describe(shouldThrottleEvent.name, () => {
                         'errorName',
                         {
                             intervalCount: 200,
-                            intervalStartAt: calculateRelativeDate(now, {hours: -2}),
-                            throttleStartedAt: calculateRelativeDate(now, {days: -3}),
+                            intervalStartAt: calculateRelativeDate(now, {
+                                hours: -2,
+                            }),
+                            throttleStartedAt: calculateRelativeDate(now, {
+                                days: -3,
+                            }),
                         },
                     ],
                 ]),
@@ -183,7 +191,9 @@ describe(shouldThrottleEvent.name, () => {
                         'errorName',
                         {
                             intervalCount: 200,
-                            intervalStartAt: calculateRelativeDate(now, {hours: -10}),
+                            intervalStartAt: calculateRelativeDate(now, {
+                                hours: -10,
+                            }),
                             throttleStartedAt: undefined,
                         },
                     ],
