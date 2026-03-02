@@ -1,4 +1,5 @@
 import {check} from '@augment-vir/assert';
+import {extractErrorMessage} from '@augment-vir/common';
 import {type Event as SentryEvent} from '@sentry/core';
 import {
     type ContextOptions,
@@ -11,6 +12,12 @@ import {extractOriginalMessage} from '../processing/event-processor.js';
 import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console.js';
 import {addPrematureEvent} from './premature-events.js';
 import {sentryClientForLogging} from './sentry-client-for-logging.js';
+
+/** A Sentry event object without the fields that are set by the logging context. */
+export type SendLogEvent = Omit<SentryEvent, 'extra' | 'level'>;
+
+/** All accepted input types for `sendLog`. Strings, Error objects, and raw Sentry events. */
+export type SendLogInfo = string | Error | SendLogEvent;
 
 /** Send non-error events to Sentry. */
 export const sendLog = {
@@ -44,23 +51,31 @@ function wrapLogWithSeverity(severity: EventSeverityEnum) {
 }
 
 function sendLogToSentry(
-    logInfo: string | Omit<SentryEvent, 'extra' | 'level'>,
+    logInfo: SendLogInfo,
     eventDetails: EventDetails,
     options: ContextOptions,
 ): string | undefined {
     try {
+        /**
+         * `Error.message` is not enumerable, so spreading an `Error` into `captureEvent` would lose
+         * the message entirely and produce an `<unlabeled event>` in Sentry. Extract the message
+         * string so it goes through the `captureMessage` path instead.
+         */
+        const resolvedLogInfo: string | SendLogEvent =
+            logInfo instanceof Error ? extractErrorMessage(logInfo) : logInfo;
+
         if (!sentryClientForLogging) {
             logToConsoleWithoutSentry(eventDetails.severity, LoggingState.NoSentryYet, {
-                message: check.isString(logInfo)
-                    ? logInfo
-                    : extractOriginalMessage(logInfo, undefined),
-                event: check.isString(logInfo) ? undefined : logInfo,
+                message: check.isString(resolvedLogInfo)
+                    ? resolvedLogInfo
+                    : extractOriginalMessage(resolvedLogInfo, undefined),
+                event: check.isString(resolvedLogInfo) ? undefined : resolvedLogInfo,
                 extra: eventDetails.extraContext,
                 hint: undefined,
                 originalException: undefined,
             });
             addPrematureEvent(sendLogToSentry, [
-                logInfo,
+                resolvedLogInfo,
                 eventDetails,
                 {wasSentPrematurely: true},
             ]);
@@ -69,10 +84,10 @@ function sendLogToSentry(
 
         const scopeContext = convertEventDetailsToSentryContext(eventDetails, options);
 
-        const eventId: string = check.isString(logInfo)
-            ? sentryClientForLogging.captureMessage(logInfo, scopeContext)
+        const eventId: string = check.isString(resolvedLogInfo)
+            ? sentryClientForLogging.captureMessage(resolvedLogInfo, scopeContext)
             : sentryClientForLogging.captureEvent({
-                  ...logInfo,
+                  ...resolvedLogInfo,
                   ...scopeContext,
               });
 

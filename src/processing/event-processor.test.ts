@@ -48,6 +48,7 @@ describe(processSentryEvent.name, () => {
             ],
             expect: {
                 level: EventSeverityEnum.Error,
+                message: 'original message',
                 extra: {
                     originalFullMessage: 'original message',
                     myExtraContext: 'hello',
@@ -101,6 +102,43 @@ describe(processSentryEvent.name, () => {
                 extra: {
                     originalFullMessage: 'no tags',
                     myContext: 'data',
+                },
+            },
+        },
+        {
+            it: 'recovers message from hint.originalException when event has no message',
+            inputs: [
+                {
+                    level: EventSeverityEnum.Warning,
+                },
+                {
+                    originalException: new Error('recovered error message'),
+                },
+            ],
+            expect: {
+                message: 'recovered error message',
+                level: EventSeverityEnum.Warning,
+                extra: {
+                    originalFullMessage: 'recovered error message',
+                },
+            },
+        },
+        {
+            it: 'does not overwrite existing event message with hint.originalException',
+            inputs: [
+                {
+                    message: 'existing message',
+                    level: EventSeverityEnum.Warning,
+                },
+                {
+                    originalException: new Error('should not replace'),
+                },
+            ],
+            expect: {
+                message: 'existing message',
+                level: EventSeverityEnum.Warning,
+                extra: {
+                    originalFullMessage: 'existing message',
                 },
             },
         },

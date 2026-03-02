@@ -46,6 +46,14 @@ export function processSentryEvent(
     );
     Object.assign(event, sentryContext);
 
+    /**
+     * Try to recover one from the hint's original exception. Without this, the event shows as
+     * `<unlabeled event>` in Sentry.
+     */
+    if (!event.message && hint.originalException) {
+        event.message = extractErrorMessage(hint.originalException);
+    }
+
     if (Object.keys(extraTags).length) {
         event.tags = {
             ...event.tags,
