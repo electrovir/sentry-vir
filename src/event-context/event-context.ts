@@ -1,4 +1,8 @@
-import {type JsonCompatibleObject, type PartialWithUndefined} from '@augment-vir/common';
+import {
+    type JsonCompatibleObject,
+    type PartialWithUndefined,
+    safeCopyThroughJson,
+} from '@augment-vir/common';
 import {type ScopeContext, type setTags} from '@sentry/core';
 import {type EventSeverityEnum} from './event-severity.js';
 
@@ -47,14 +51,14 @@ export function convertEventDetailsToSentryContext(
     eventDetails: EventDetails,
     options: ContextOptions,
 ): Pick<ScopeContext, 'extra' | 'level'> & Partial<Pick<ScopeContext, 'tags'>> {
-    const extra = {
+    const extra = safeCopyThroughJson({
         ...(options.wasSentPrematurely
             ? {
                   wasSentPrematurely: true,
               }
             : {}),
         ...eventDetails.extraContext,
-    };
+    });
 
     return {
         extra,

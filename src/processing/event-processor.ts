@@ -1,4 +1,4 @@
-import {extractErrorMessage} from '@augment-vir/common';
+import {extractErrorMessage, safeCopyThroughJson} from '@augment-vir/common';
 import {
     type ErrorEvent,
     type EventHint,
@@ -24,12 +24,12 @@ export function processSentryEvent(
     /** Optional callback for creating extra event context. */
     createUniversalContext?: EventExtraContextCreator | undefined,
 ) {
-    const extraContext = {
+    const extraContext = safeCopyThroughJson({
         ...extractExtraEventContext(hint),
         ...extractExtraEventContext(event),
         ...createUniversalContext?.(),
         originalFullMessage: event.message || extractErrorMessage(hint.originalException),
-    };
+    });
     const extraTags = {
         ...extractExtraEventTags(hint),
         ...extractExtraEventTags(event),
