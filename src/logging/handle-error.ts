@@ -1,10 +1,12 @@
 import {extractErrorMessage} from '@augment-vir/common';
+import {type Attachment} from '@sentry/core';
 import {
     type ContextOptions,
     type EventContextAndTags,
     convertEventDetailsToSentryContext,
 } from '../event-context/event-context.js';
 import {EventSeverityEnum} from '../event-context/event-severity.js';
+import {extractExtraAttachmentsFromSymbol} from '../event-context/extra-event-context.js';
 import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console.js';
 import {addPrematureEvent} from './premature-events.js';
 import {sentryClientForLogging} from './sentry-client-for-logging.js';
@@ -52,7 +54,20 @@ function internalHandleError(
             options,
         );
 
-        const eventId = sentryClientForLogging.captureException(error, scopeContext);
+        const client = sentryClientForLogging;
+        const allAttachments: ReadonlyArray<Attachment> = [
+            ...(eventOptions?.attachments || []),
+            ...(extractExtraAttachmentsFromSymbol(error) || []),
+        ];
+
+        const eventId = allAttachments.length
+            ? client.withScope((scope) => {
+                  allAttachments.forEach((attachment) => {
+                      scope.addAttachment(attachment);
+                  });
+                  return client.captureException(error, scopeContext);
+              })
+            : client.captureException(error, scopeContext);
         return eventId;
     } catch (caught) {
         console.error('Error while trying to handle error with Sentry:', caught);

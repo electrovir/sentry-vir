@@ -5,7 +5,7 @@ import {sendPrematureEvents} from './premature-events.js';
 /** The bare minimum Sentry client needed for logging events. */
 export type SentryClientForLogging = Pick<
     SentryDep,
-    'captureMessage' | 'captureException' | 'captureEvent' | 'setTags'
+    'captureMessage' | 'captureException' | 'captureEvent' | 'setTags' | 'withScope'
 >;
 /** Internal sentry client used for logging. */
 export let sentryClientForLogging: SentryClientForLogging | undefined;

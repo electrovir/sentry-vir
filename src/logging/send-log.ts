@@ -41,6 +41,7 @@ function wrapLogWithSeverity(severity: EventSeverityEnum) {
             {
                 extraContext: eventOptions?.context,
                 tags: eventOptions?.tags,
+                attachments: eventOptions?.attachments,
                 severity,
             },
             {
@@ -85,13 +86,25 @@ function sendLogToSentry(
         }
 
         const scopeContext = convertEventDetailsToSentryContext(eventDetails, options);
+        const client = sentryClientForLogging;
 
-        const eventId: string = check.isString(resolvedLogInfo)
-            ? sentryClientForLogging.captureMessage(resolvedLogInfo, scopeContext)
-            : sentryClientForLogging.captureEvent({
-                  ...resolvedLogInfo,
-                  ...scopeContext,
-              });
+        function captureWithClient(): string {
+            return check.isString(resolvedLogInfo)
+                ? client.captureMessage(resolvedLogInfo, scopeContext)
+                : client.captureEvent({
+                      ...resolvedLogInfo,
+                      ...scopeContext,
+                  });
+        }
+
+        const eventId: string = eventDetails.attachments?.length
+            ? client.withScope((scope) => {
+                  eventDetails.attachments?.forEach((attachment) => {
+                      scope.addAttachment(attachment);
+                  });
+                  return captureWithClient();
+              })
+            : captureWithClient();
 
         return eventId;
     } catch (caught) {

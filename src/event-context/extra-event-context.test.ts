@@ -2,12 +2,16 @@ import {ensureType} from '@augment-vir/common';
 import {describe, itCases} from '@augment-vir/test';
 import {ExtraContextError} from './extra-context.error.js';
 import {
+    extractExtraEventAttachments,
     extractExtraEventContext,
     extractExtraEventTags,
+    extraEventAttachmentsSymbol,
     extraEventContextSymbol,
     extraEventTagsSymbol,
+    hasExtraEventAttachments,
     hasExtraEventContext,
     hasExtraEventTags,
+    type HasExtraAttachments,
     type HasExtraContext,
     type HasExtraTags,
 } from './extra-event-context.js';
@@ -172,6 +176,109 @@ describe(hasExtraEventTags.name, () => {
         },
         {
             it: 'fails to find tags in an object that lacks them',
+            input: {
+                stuff: 'hi',
+            },
+            expect: false,
+        },
+    ]);
+});
+
+describe(extractExtraEventAttachments.name, () => {
+    itCases(extractExtraEventAttachments, [
+        {
+            it: 'grabs attachments from extra context error',
+            input: new ExtraContextError('test message', {
+                attachments: [
+                    {
+                        filename: 'screenshot.png',
+                        data: 'binary-data',
+                        contentType: 'image/png',
+                    },
+                ],
+            }),
+            expect: [
+                {
+                    filename: 'screenshot.png',
+                    data: 'binary-data',
+                    contentType: 'image/png',
+                },
+            ],
+        },
+        {
+            it: 'grabs attachments from an ordinary object',
+            input: {
+                [extraEventAttachmentsSymbol]: [
+                    {
+                        filename: 'log.txt',
+                        data: 'log content',
+                    },
+                ],
+            } as any,
+            expect: [
+                {
+                    filename: 'log.txt',
+                    data: 'log content',
+                },
+            ],
+        },
+        {
+            it: 'grabs attachments from hint exception',
+            input: {
+                originalException: {
+                    [extraEventAttachmentsSymbol]: [
+                        {
+                            filename: 'dom.html',
+                            data: '<html></html>',
+                            contentType: 'text/html',
+                        },
+                    ],
+                },
+            },
+            expect: [
+                {
+                    filename: 'dom.html',
+                    data: '<html></html>',
+                    contentType: 'text/html',
+                },
+            ],
+        },
+        {
+            it: 'returns undefined if no attachments found',
+            input: {},
+            expect: undefined,
+        },
+    ]);
+});
+
+describe(hasExtraEventAttachments.name, () => {
+    itCases(hasExtraEventAttachments, [
+        {
+            it: 'finds attachments in an extra context error',
+            input: new ExtraContextError('test message', {
+                attachments: [
+                    {
+                        filename: 'file.txt',
+                        data: 'content',
+                    },
+                ],
+            }),
+            expect: true,
+        },
+        {
+            it: 'finds attachments in an ordinary object',
+            input: ensureType<HasExtraAttachments>({
+                [extraEventAttachmentsSymbol]: [
+                    {
+                        filename: 'file.txt',
+                        data: 'content',
+                    },
+                ],
+            }),
+            expect: true,
+        },
+        {
+            it: 'fails to find attachments in an object that lacks them',
             input: {
                 stuff: 'hi',
             },

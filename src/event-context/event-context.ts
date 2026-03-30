@@ -3,8 +3,10 @@ import {
     type PartialWithUndefined,
     safeCopyThroughJson,
 } from '@augment-vir/common';
-import {type ScopeContext, type setTags} from '@sentry/core';
+import {type Attachment, type ScopeContext, type setTags} from '@sentry/core';
 import {type EventSeverityEnum} from './event-severity.js';
+
+export type {Attachment} from '@sentry/core';
 
 /**
  * Used for all extra context types. While keys must be strings, values can be whatever but must be
@@ -16,12 +18,13 @@ export type EventExtraContext = JsonCompatibleObject;
 export type EventTags = Parameters<typeof setTags>[0];
 
 /**
- * Combined context and tags parameter used for event logging functions. Both properties are
- * optional.
+ * Combined context, tags, and attachments parameter used for event logging functions. All
+ * properties are optional.
  */
 export type EventContextAndTags = PartialWithUndefined<{
     context: EventExtraContext;
     tags: EventTags;
+    attachments: ReadonlyArray<Attachment>;
 }>;
 
 /** Function that generates extra event context. */
@@ -31,6 +34,7 @@ export type EventExtraContextCreator = () => EventExtraContext;
 export type EventDetails = {
     extraContext?: EventExtraContext | undefined;
     tags?: EventTags | undefined;
+    attachments?: ReadonlyArray<Attachment> | undefined;
     severity: EventSeverityEnum;
 };
 

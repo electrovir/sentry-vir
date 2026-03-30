@@ -1,7 +1,11 @@
 import {assert} from '@augment-vir/assert';
 import {describe, it} from '@augment-vir/test';
 import {ExtraContextError, throwWithExtraContext} from './extra-context.error.js';
-import {hasExtraEventContext, hasExtraEventTags} from './extra-event-context.js';
+import {
+    hasExtraEventAttachments,
+    hasExtraEventContext,
+    hasExtraEventTags,
+} from './extra-event-context.js';
 
 describe(ExtraContextError.name, () => {
     it('includes extra context', () => {
@@ -53,6 +57,38 @@ describe(ExtraContextError.name, () => {
         });
         assert.isTrue(hasExtraEventContext(error));
         assert.isTrue(hasExtraEventTags(error));
+    });
+
+    it('includes attachments', () => {
+        assert.isTrue(
+            hasExtraEventAttachments(
+                new ExtraContextError('yo', {
+                    attachments: [
+                        {
+                            filename: 'screenshot.png',
+                            data: new Uint8Array([
+                                1,
+                                2,
+                                3,
+                            ]),
+                            contentType: 'image/png',
+                        },
+                    ],
+                }),
+            ),
+        );
+    });
+
+    it('does not include attachments when none are provided', () => {
+        assert.isFalse(
+            hasExtraEventAttachments(
+                new ExtraContextError('yo', {
+                    context: {
+                        data: 'hi',
+                    },
+                }),
+            ),
+        );
     });
 });
 
@@ -108,6 +144,23 @@ describe(throwWithExtraContext.name, () => {
         } catch (error) {
             assert.isTrue(hasExtraEventContext(error));
             assert.isTrue(hasExtraEventTags(error));
+        }
+    });
+
+    it('includes attachments', () => {
+        try {
+            throwWithExtraContext('attachment test', {
+                attachments: [
+                    {
+                        filename: 'log.txt',
+                        data: 'log content',
+                        contentType: 'text/plain',
+                    },
+                ],
+            });
+            throw new Error('did not throw');
+        } catch (error) {
+            assert.isTrue(hasExtraEventAttachments(error));
         }
     });
 });

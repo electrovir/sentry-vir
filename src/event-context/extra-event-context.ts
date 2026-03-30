@@ -1,5 +1,5 @@
 import {check} from '@augment-vir/assert';
-import {type Event, type EventHint} from '@sentry/core';
+import {type Attachment, type Event, type EventHint} from '@sentry/core';
 import {type EventExtraContext, type EventTags} from './event-context.js';
 
 /**
@@ -14,11 +14,20 @@ export const extraEventContextSymbol = Symbol('extra-event-context');
  */
 export const extraEventTagsSymbol = Symbol('extra-event-tags');
 
+/**
+ * Symbol used to attach extra event attachments to events. Used alongside extraEventContextSymbol
+ * for attaching file data to thrown errors.
+ */
+export const extraEventAttachmentsSymbol = Symbol('extra-event-attachments');
+
 /** Simply describes an object that has extra event context. */
 export type HasExtraContext = {[extraEventContextSymbol]: EventExtraContext};
 
 /** Simply describes an object that has extra event tags. */
 export type HasExtraTags = {[extraEventTagsSymbol]: EventTags};
+
+/** Simply describes an object that has extra event attachments. */
+export type HasExtraAttachments = {[extraEventAttachmentsSymbol]: ReadonlyArray<Attachment>};
 
 /** Type guard for whether any given input has extra event context. */
 export function hasExtraEventContext(input: unknown): input is HasExtraContext {
@@ -28,6 +37,11 @@ export function hasExtraEventContext(input: unknown): input is HasExtraContext {
 /** Type guard for whether any given input has extra event tags. */
 export function hasExtraEventTags(input: unknown): input is HasExtraTags {
     return check.hasKey(input, extraEventTagsSymbol) && !!input[extraEventTagsSymbol];
+}
+
+/** Type guard for whether any given input has extra event attachments. */
+export function hasExtraEventAttachments(input: unknown): input is HasExtraAttachments {
+    return check.hasKey(input, extraEventAttachmentsSymbol) && !!input[extraEventAttachmentsSymbol];
 }
 
 /**
@@ -49,6 +63,19 @@ export function extractExtraContentFromSymbol(input: unknown): EventExtraContext
 export function extractExtraTagsFromSymbol(input: unknown): EventTags | undefined {
     if (hasExtraEventTags(input)) {
         return input[extraEventTagsSymbol];
+    }
+    return undefined;
+}
+
+/**
+ * Checks if extra event attachments have been injected into the input via
+ * extraEventAttachmentsSymbol and, if so, extracts them.
+ */
+export function extractExtraAttachmentsFromSymbol(
+    input: unknown,
+): ReadonlyArray<Attachment> | undefined {
+    if (hasExtraEventAttachments(input)) {
+        return input[extraEventAttachmentsSymbol];
     }
     return undefined;
 }
@@ -98,6 +125,31 @@ export function extractExtraEventTags(event: EventHint | Event): EventTags | und
     };
 
     if (Object.keys(combined).length) {
+        return combined;
+    } else {
+        return undefined;
+    }
+}
+
+/**
+ * Tries to extract extra event attachments via extraEventAttachmentsSymbol. Returns undefined if
+ * there are no extra event attachments.
+ */
+export function extractExtraEventAttachments(
+    event: EventHint | Event,
+): ReadonlyArray<Attachment> | undefined {
+    const fromRootSymbol = extractExtraAttachmentsFromSymbol(event);
+    const fromSubSymbol =
+        'originalException' in event
+            ? extractExtraAttachmentsFromSymbol(event.originalException)
+            : undefined;
+
+    const combined: ReadonlyArray<Attachment> = [
+        ...(fromRootSymbol || []),
+        ...(fromSubSymbol || []),
+    ];
+
+    if (combined.length) {
         return combined;
     } else {
         return undefined;

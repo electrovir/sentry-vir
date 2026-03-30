@@ -1,8 +1,11 @@
 import {ensureError} from '@augment-vir/common';
+import {type Attachment} from '@sentry/core';
 import {type EventContextAndTags, type EventExtraContext, type EventTags} from './event-context.js';
 import {
+    extraEventAttachmentsSymbol,
     extraEventContextSymbol,
     extraEventTagsSymbol,
+    type HasExtraAttachments,
     type HasExtraContext,
 } from './extra-event-context.js';
 
@@ -20,6 +23,7 @@ import {
 export class ExtraContextError extends Error {
     public readonly [extraEventContextSymbol]: EventExtraContext | undefined;
     public readonly [extraEventTagsSymbol]: EventTags | undefined;
+    public readonly [extraEventAttachmentsSymbol]: ReadonlyArray<Attachment> | undefined;
 
     constructor(message: string, extraData: EventContextAndTags) {
         super(message);
@@ -28,6 +32,9 @@ export class ExtraContextError extends Error {
         }
         if (extraData.tags) {
             this[extraEventTagsSymbol] = extraData.tags;
+        }
+        if (extraData.attachments) {
+            this[extraEventAttachmentsSymbol] = extraData.attachments;
         }
     }
 }
@@ -41,6 +48,7 @@ export function throwWithExtraContext(
     extraData: EventContextAndTags,
 ): never {
     const error = ensureError(originalError) as Error &
+        HasExtraAttachments &
         HasExtraContext & {
             [extraEventTagsSymbol]?: EventTags;
         };
@@ -49,6 +57,9 @@ export function throwWithExtraContext(
     }
     if (extraData.tags) {
         error[extraEventTagsSymbol] = extraData.tags;
+    }
+    if (extraData.attachments) {
+        error[extraEventAttachmentsSymbol] = extraData.attachments;
     }
 
     throw error;
