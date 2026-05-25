@@ -38,7 +38,12 @@ function createMockSentryClient() {
         },
         setTags() {},
         withScope(
-            ...args: [Scope | undefined, (scope: Scope) => unknown] | [(scope: Scope) => unknown]
+            ...args:
+                | [
+                      Scope | undefined,
+                      (scope: Scope) => unknown,
+                  ]
+                | [(scope: Scope) => unknown]
         ) {
             const callback = args.length === 1 ? args[0] : args[1];
             const mockScope = {
