@@ -5,6 +5,7 @@ import {
     extraEventAttachmentsSymbol,
     extraEventContextSymbol,
     extraEventTagsSymbol,
+    extraEventThrottleThresholdSymbol,
     type HasExtraAttachments,
     type HasExtraContext,
 } from './extra-event-context.js';
@@ -24,6 +25,7 @@ export class ExtraContextError extends Error {
     public readonly [extraEventContextSymbol]: EventExtraContext | undefined;
     public readonly [extraEventTagsSymbol]: EventTags | undefined;
     public readonly [extraEventAttachmentsSymbol]: ReadonlyArray<Attachment> | undefined;
+    public readonly [extraEventThrottleThresholdSymbol]: number | undefined;
 
     constructor(message: string, extraData: EventContextAndTags) {
         super(message);
@@ -35,6 +37,9 @@ export class ExtraContextError extends Error {
         }
         if (extraData.attachments) {
             this[extraEventAttachmentsSymbol] = extraData.attachments;
+        }
+        if (extraData.throttleThreshold != undefined) {
+            this[extraEventThrottleThresholdSymbol] = extraData.throttleThreshold;
         }
     }
 }
@@ -51,6 +56,7 @@ export function throwWithExtraContext(
         HasExtraAttachments &
         HasExtraContext & {
             [extraEventTagsSymbol]?: EventTags;
+            [extraEventThrottleThresholdSymbol]?: number;
         };
     if (extraData.context) {
         error[extraEventContextSymbol] = extraData.context;
@@ -60,6 +66,9 @@ export function throwWithExtraContext(
     }
     if (extraData.attachments) {
         error[extraEventAttachmentsSymbol] = extraData.attachments;
+    }
+    if (extraData.throttleThreshold != undefined) {
+        error[extraEventThrottleThresholdSymbol] = extraData.throttleThreshold;
     }
 
     throw error;

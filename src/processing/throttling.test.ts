@@ -4,6 +4,7 @@ import {describe, it, itCases} from '@augment-vir/test';
 import {calculateRelativeDate, getNowInUtcTimezone} from 'date-vir';
 import {type FuzzyIndexKey} from 'fuzzy-vir';
 import {
+    combineThrottleThreshold,
     fuzzyErrorIndex,
     shouldThrottleEvent,
     throttleCache,
@@ -12,6 +13,10 @@ import {
 
 describe(shouldThrottleEvent.name, () => {
     type TestThrottleCacheEntry = Omit<ThrottleCacheEntry, 'intervalStartAt'>;
+
+    function isThrottled(...args: Parameters<typeof shouldThrottleEvent>): boolean {
+        return shouldThrottleEvent(...args).shouldThrottle;
+    }
 
     function testShouldThrottle(
         initThrottleCache: Map<FuzzyIndexKey, ThrottleCacheEntry>,
@@ -25,7 +30,7 @@ describe(shouldThrottleEvent.name, () => {
         ] of initThrottleCache) {
             throttleCache.set(key, value);
         }
-        const isThrottled = shouldThrottleEvent(...params);
+        const isThrottled = shouldThrottleEvent(...params).shouldThrottle;
         const throttleCacheResult: Record<string, TestThrottleCacheEntry> = {};
         for (const [
             key,
@@ -183,7 +188,7 @@ describe(shouldThrottleEvent.name, () => {
         ];
 
         const results = variants.map((message) =>
-            shouldThrottleEvent(
+            isThrottled(
                 {
                     message,
                 },
@@ -223,7 +228,7 @@ describe(shouldThrottleEvent.name, () => {
             parserError,
         ];
         const results = messages.map((message) =>
-            shouldThrottleEvent(
+            isThrottled(
                 {
                     message,
                 },
@@ -268,7 +273,7 @@ describe(shouldThrottleEvent.name, () => {
 
         dbErrors.forEach((message) =>
             assert.strictEquals(
-                shouldThrottleEvent(
+                isThrottled(
                     {
                         message,
                     },
@@ -280,7 +285,7 @@ describe(shouldThrottleEvent.name, () => {
         );
         // An unrelated message goes to its own bucket; the db bucket stays at 3.
         assert.strictEquals(
-            shouldThrottleEvent(
+            isThrottled(
                 {
                     message: unrelated,
                 },
@@ -290,5 +295,81 @@ describe(shouldThrottleEvent.name, () => {
             false,
         );
         assert.strictEquals(fuzzyErrorIndex.clusterOrder.size, 2);
+    });
+
+    it('combineThrottleThreshold takes the minimum of base and per-call thresholds', () => {
+        assert.strictEquals(
+            combineThrottleThreshold(
+                {
+                    throttleThreshold: 500,
+                },
+                1,
+            ).throttleThreshold,
+            1,
+        );
+        assert.strictEquals(
+            combineThrottleThreshold(
+                {
+                    throttleThreshold: 2,
+                },
+                999,
+            ).throttleThreshold,
+            2,
+        );
+    });
+
+    it('combineThrottleThreshold returns the base unchanged when no per-call threshold given', () => {
+        const base = {
+            throttleThreshold: 500,
+            disableThrottleLog: true,
+        };
+        assert.strictEquals(combineThrottleThreshold(base, undefined), base);
+    });
+
+    it('honors a per-call throttle threshold that is stricter than the global threshold', () => {
+        fuzzyErrorIndex.destroy();
+        throttleCache.clear();
+
+        const options = combineThrottleThreshold(
+            {
+                throttleThreshold: 500,
+                disableThrottleLog: true,
+            },
+            1,
+        );
+        const event = {
+            message: 'per-call throttled message alpha beta gamma',
+        };
+
+        assert.strictEquals(isThrottled(event, undefined, options), false);
+        assert.strictEquals(isThrottled(event, undefined, options), true);
+    });
+
+    it('ignores a per-call throttle threshold that is looser than the global threshold', () => {
+        fuzzyErrorIndex.destroy();
+        throttleCache.clear();
+
+        const options = combineThrottleThreshold(
+            {
+                throttleThreshold: 2,
+                disableThrottleLog: true,
+            },
+            999,
+        );
+        const event = {
+            message: 'loose per-call threshold message alpha beta gamma',
+        };
+
+        const results = [
+            isThrottled(event, undefined, options),
+            isThrottled(event, undefined, options),
+            isThrottled(event, undefined, options),
+        ];
+
+        assert.deepEquals(results, [
+            false,
+            false,
+            true,
+        ]);
     });
 });

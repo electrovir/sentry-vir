@@ -6,9 +6,14 @@ import {
     convertEventDetailsToSentryContext,
 } from '../event-context/event-context.js';
 import {EventSeverityEnum} from '../event-context/event-severity.js';
-import {extractExtraAttachmentsFromSymbol} from '../event-context/extra-event-context.js';
+import {
+    extractExtraAttachmentsFromSymbol,
+    extractExtraEventThrottleThreshold,
+} from '../event-context/extra-event-context.js';
 import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console.js';
+import {skipBeforeSendThrottleContextKey} from '../processing/throttling.js';
 import {addPrematureEvent} from './premature-events.js';
+import {checkActiveThrottle} from './send-log.js';
 import {sentryClientForLogging} from './sentry-client-for-logging.js';
 
 /** Record an error to Sentry without throwing it. */
@@ -45,6 +50,29 @@ function internalHandleError(
             return undefined;
         }
 
+        const perCallThresholdCandidates = [
+            extractExtraEventThrottleThreshold({
+                originalException: error,
+            }),
+            eventOptions?.throttleThreshold,
+        ].filter((value): value is number => value != undefined);
+        const perCallThrottleThreshold = perCallThresholdCandidates.length
+            ? Math.min(...perCallThresholdCandidates)
+            : undefined;
+        if (
+            checkActiveThrottle(
+                {
+                    message: extractErrorMessage(error),
+                },
+                {
+                    originalException: error,
+                },
+                perCallThrottleThreshold,
+            )
+        ) {
+            return undefined;
+        }
+
         const scopeContext = convertEventDetailsToSentryContext(
             {
                 extraContext: eventOptions?.context,
@@ -60,14 +88,15 @@ function internalHandleError(
             ...(extractExtraAttachmentsFromSymbol(error) || []),
         ];
 
-        const eventId = allAttachments.length
-            ? client.withScope((scope) => {
-                  allAttachments.forEach((attachment) => {
-                      scope.addAttachment(attachment);
-                  });
-                  return client.captureException(error, scopeContext);
-              })
-            : client.captureException(error, scopeContext);
+        const eventId = client.withScope((scope) => {
+            scope.setContext(skipBeforeSendThrottleContextKey, {
+                skipThrottle: true,
+            });
+            allAttachments.forEach((attachment) => {
+                scope.addAttachment(attachment);
+            });
+            return client.captureException(error, scopeContext);
+        });
         return eventId;
     } catch (caught) {
         console.error('Error while trying to handle error with Sentry:', caught);

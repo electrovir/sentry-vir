@@ -20,6 +20,10 @@ function createMockSentryClient() {
     }[] = [];
     const capturedEvents: SentryEvent[] = [];
     const capturedAttachments: Attachment[] = [];
+    const capturedContexts: {
+        name: string;
+        context: unknown;
+    }[] = [];
 
     const mockClient: SentryClientForLogging = {
         captureMessage(message: string, captureContext?: CaptureContext | SeverityLevel) {
@@ -51,6 +55,13 @@ function createMockSentryClient() {
                     capturedAttachments.push(attachment);
                     return mockScope;
                 },
+                setContext(name: string, context: unknown) {
+                    capturedContexts.push({
+                        name,
+                        context,
+                    });
+                    return mockScope;
+                },
             } as Scope;
             return callback(mockScope);
         },
@@ -61,6 +72,7 @@ function createMockSentryClient() {
         capturedMessages,
         capturedEvents,
         capturedAttachments,
+        capturedContexts,
     };
 }
 
@@ -169,13 +181,15 @@ describe('sendLog', () => {
         assert.strictEquals(capturedAttachments[0].filename, 'log.txt');
     });
 
-    it('does not use withScope when no attachments are provided', async () => {
-        const {mockClient, capturedMessages, capturedAttachments} = createMockSentryClient();
+    it('always uses withScope to set the skip-throttle marker, even without attachments', async () => {
+        const {mockClient, capturedMessages, capturedAttachments, capturedContexts} =
+            createMockSentryClient();
         await setSentryClientForLogging(mockClient);
 
         sendLog.info('no attachments');
 
         assert.isLengthExactly(capturedMessages, 1);
         assert.isLengthExactly(capturedAttachments, 0);
+        assert.isLengthExactly(capturedContexts, 1);
     });
 });

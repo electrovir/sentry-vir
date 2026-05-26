@@ -4,8 +4,8 @@ import {type SentryDep, type SentryExecutionEnvEnum} from '../env/execution-env.
 import {type EventExtraContextCreator} from '../event-context/event-context.js';
 import {setSentryClientForLogging} from '../logging/sentry-client-for-logging.js';
 import {processSentryEvent} from '../processing/event-processor.js';
-import {type ThrottleOptions} from '../processing/throttling.js';
-import {type UserOverrides, createSentryConfig} from './sentry-config.js';
+import {setActiveThrottleOptions, type ThrottleOptions} from '../processing/throttling.js';
+import {createSentryConfig, type UserOverrides} from './sentry-config.js';
 
 /** Configuration for initializing Sentry. */
 export type InitSentryInput = {
@@ -80,6 +80,7 @@ export async function baseInitSentry({
         processSentryEvent(event, hint, createUniversalContext),
     );
 
+    setActiveThrottleOptions(throttleOptions);
     void setSentryClientForLogging(sentryDep);
     return sentryDep;
 }

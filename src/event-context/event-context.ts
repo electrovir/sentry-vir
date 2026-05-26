@@ -25,6 +25,12 @@ export type EventContextAndTags = PartialWithUndefined<{
     context: EventExtraContext;
     tags: EventTags;
     attachments: ReadonlyArray<Attachment>;
+    /**
+     * Per-event throttle threshold override. When set, throttling for this event uses the minimum
+     * of this value and the globally-configured `throttleThreshold`, allowing individual log calls
+     * to be throttled more aggressively than the global default.
+     */
+    throttleThreshold: number;
 }>;
 
 /** Function that generates extra event context. */
