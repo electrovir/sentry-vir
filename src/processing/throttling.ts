@@ -12,6 +12,7 @@ import {
     type FullDate,
     type UtcTimezone,
 } from 'date-vir';
+import {FuzzyIndex, type FuzzyIndexKey} from 'fuzzy-vir';
 import {sendLog} from '../logging/send-log.js';
 import {extractOriginalMessage} from './event-processor.js';
 
@@ -23,15 +24,27 @@ import {extractOriginalMessage} from './event-processor.js';
 export type ThrottleCacheEntry = {
     intervalCount: number;
     intervalStartAt: FullDate<UtcTimezone>;
-    throttleStartedAt: FullDate<UtcTimezone> | undefined;
 };
 
 /**
- * The current throttle cache.
+ * The current throttle cache, keyed by a fuzzy cluster key so near-duplicate error messages share a
+ * throttle bucket.
  *
  * @category Internal
  */
-export const throttleCache = new Map<string, ThrottleCacheEntry>();
+export const throttleCache = new Map<FuzzyIndexKey, ThrottleCacheEntry>();
+
+/**
+ * Fuzzy index used to group near-duplicate error messages together so they share a single throttle
+ * bucket. The `onEvict` hook keeps {@link throttleCache} in sync when a cluster is dropped.
+ *
+ * @category Internal
+ */
+export const fuzzyErrorIndex = new FuzzyIndex({
+    onEvict(clusterKey) {
+        throttleCache.delete(clusterKey);
+    },
+});
 
 /**
  * Throttling options.
@@ -40,19 +53,14 @@ export const throttleCache = new Map<string, ThrottleCacheEntry>();
  */
 export type ThrottleOptions = {
     disableThrottling: boolean;
-    /**
-     * When throttling begins, this determines how much time must pass before the error will be
-     * logged again.
-     */
+    /** Duration over which up to `throttleThreshold` events of the same message are allowed. */
     thresholdInterval: AnyDuration;
-    /**
-     * In order for throttling to turn off, the throttle threshold must have not been hit for this
-     * entire duration.
-     */
-    throttleCooldown: AnyDuration;
-    /** Enable a sentry log that indicates that an error is being throttled. */
+    /** Disable the sentry log that fires the first time an error is throttled in an interval. */
     disableThrottleLog: boolean;
-    /** If an error is logged this many times within `logInterval`, it starts getting throttled. */
+    /**
+     * Within `thresholdInterval`, if an error message is logged more than this many times,
+     * additional events are dropped until the interval rolls over.
+     */
     throttleThreshold: number;
 };
 
@@ -67,10 +75,7 @@ export const defaultThrottleOptions: ThrottleOptions = {
         hours: 1,
     },
     disableThrottleLog: false,
-    throttleCooldown: {
-        days: 1,
-    },
-    throttleThreshold: 50,
+    throttleThreshold: 500,
 };
 
 /**
@@ -89,25 +94,15 @@ export function shouldThrottleEvent(
     if (options.disableThrottling) {
         return false;
     }
-    const errorKey = extractOriginalMessage(event, hint);
+    const errorKey = fuzzyErrorIndex.insert(extractOriginalMessage(event, hint));
     const now = getNowInUtcTimezone();
 
     const errorThrottleData = getOrSetFromMap(throttleCache, errorKey, () => {
         return {
             intervalCount: 0,
             intervalStartAt: now,
-            throttleStartedAt: undefined,
         };
     });
-    errorThrottleData.intervalCount++;
-
-    const thresholdSurpassed = errorThrottleData.intervalCount > options.throttleThreshold;
-    if (thresholdSurpassed && !errorThrottleData.throttleStartedAt) {
-        errorThrottleData.throttleStartedAt = now;
-        if (options.disableThrottleLog) {
-            sendLog.warning(`Error throttled: ${errorKey}`);
-        }
-    }
 
     const intervalNeedsRestart = isDateAfter({
         fullDate: now,
@@ -117,33 +112,43 @@ export function shouldThrottleEvent(
         ),
     });
     if (intervalNeedsRestart) {
-        errorThrottleData.intervalStartAt = now;
-        if (thresholdSurpassed) {
-            /**
-             * If an interval surpassed the threshold, always bump the threshold started at up so
-             * the cooldown requires all intervals to be below the threshold.
-             */
-            errorThrottleData.throttleStartedAt = now;
-            if (options.disableThrottleLog) {
-                sendLog.warning(`Error throttled: ${errorKey}`);
-            }
+        const suppressedCount = errorThrottleData.intervalCount - options.throttleThreshold;
+        if (suppressedCount > 0 && !options.disableThrottleLog) {
+            sendLog.warning(
+                `Throttling ended after suppressing ${suppressedCount} events: ${errorKey}`,
+                {
+                    context: {
+                        suppressedErrorKey: errorKey,
+                        suppressedCount,
+                    },
+                    tags: {
+                        suppressedErrorKey: errorKey,
+                    },
+                },
+            );
         }
+        errorThrottleData.intervalStartAt = now;
         errorThrottleData.intervalCount = 0;
     }
 
-    if (errorThrottleData.throttleStartedAt) {
-        const shouldStopThrottle = isDateAfter({
-            fullDate: now,
-            relativeTo: calculateRelativeDate(
-                errorThrottleData.throttleStartedAt,
-                options.throttleCooldown,
-            ),
-        });
+    errorThrottleData.intervalCount++;
 
-        if (shouldStopThrottle && !thresholdSurpassed) {
-            errorThrottleData.throttleStartedAt = undefined;
-        }
+    const shouldThrottle = errorThrottleData.intervalCount > options.throttleThreshold;
+
+    if (
+        shouldThrottle &&
+        errorThrottleData.intervalCount === options.throttleThreshold + 1 &&
+        !options.disableThrottleLog
+    ) {
+        sendLog.warning(`Throttling started: ${errorKey}`, {
+            context: {
+                suppressedErrorKey: errorKey,
+            },
+            tags: {
+                suppressedErrorKey: errorKey,
+            },
+        });
     }
 
-    return !!errorThrottleData.throttleStartedAt;
+    return shouldThrottle;
 }

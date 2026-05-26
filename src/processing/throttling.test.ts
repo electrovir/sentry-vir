@@ -1,21 +1,23 @@
-import {describe, itCases} from '@augment-vir/test';
-import {calculateRelativeDate, type FullDate, getNowInUtcTimezone} from 'date-vir';
-import {shouldThrottleEvent, throttleCache, type ThrottleCacheEntry} from './throttling.js';
+import {assert} from '@augment-vir/assert';
+import {applyBrand} from '@augment-vir/common';
+import {describe, it, itCases} from '@augment-vir/test';
+import {calculateRelativeDate, getNowInUtcTimezone} from 'date-vir';
+import {type FuzzyIndexKey} from 'fuzzy-vir';
+import {
+    fuzzyErrorIndex,
+    shouldThrottleEvent,
+    throttleCache,
+    type ThrottleCacheEntry,
+} from './throttling.js';
 
 describe(shouldThrottleEvent.name, () => {
-    type TestThrottleCacheEntry = {
-        [Key in keyof Omit<ThrottleCacheEntry, 'intervalStartAt'>]: Extract<
-            ThrottleCacheEntry[Key],
-            FullDate
-        > extends never
-            ? ThrottleCacheEntry[Key]
-            : boolean;
-    };
+    type TestThrottleCacheEntry = Omit<ThrottleCacheEntry, 'intervalStartAt'>;
 
     function testShouldThrottle(
-        initThrottleCache: Map<string, ThrottleCacheEntry>,
+        initThrottleCache: Map<FuzzyIndexKey, ThrottleCacheEntry>,
         ...params: Parameters<typeof shouldThrottleEvent>
     ) {
+        fuzzyErrorIndex.destroy();
         throttleCache.clear();
         for (const [
             key,
@@ -31,7 +33,6 @@ describe(shouldThrottleEvent.name, () => {
         ] of throttleCache) {
             throttleCacheResult[key] = {
                 intervalCount: value.intervalCount,
-                throttleStartedAt: !!value.throttleStartedAt,
             };
         }
         return {
@@ -40,6 +41,7 @@ describe(shouldThrottleEvent.name, () => {
         };
     }
     const now = getNowInUtcTimezone();
+    const errorName = applyBrand<FuzzyIndexKey>('errorName');
 
     itCases(testShouldThrottle, [
         {
@@ -56,21 +58,19 @@ describe(shouldThrottleEvent.name, () => {
                 throttleCache: {
                     errorName: {
                         intervalCount: 1,
-                        throttleStartedAt: false,
                     },
                 },
             },
         },
         {
-            it: 'starts throttling when threshold surpassed for the first time',
+            it: 'throttles when threshold surpassed within current interval',
             inputs: [
                 new Map([
                     [
-                        'errorName',
+                        errorName,
                         {
-                            intervalCount: 100,
+                            intervalCount: 600,
                             intervalStartAt: now,
-                            throttleStartedAt: undefined,
                         },
                     ],
                 ]),
@@ -83,8 +83,7 @@ describe(shouldThrottleEvent.name, () => {
                 isThrottled: true,
                 throttleCache: {
                     errorName: {
-                        intervalCount: 101,
-                        throttleStartedAt: true,
+                        intervalCount: 601,
                     },
                 },
             },
@@ -94,11 +93,10 @@ describe(shouldThrottleEvent.name, () => {
             inputs: [
                 new Map([
                     [
-                        'errorName',
+                        errorName,
                         {
-                            intervalCount: 100,
+                            intervalCount: 600,
                             intervalStartAt: now,
-                            throttleStartedAt: undefined,
                         },
                     ],
                 ]),
@@ -114,25 +112,21 @@ describe(shouldThrottleEvent.name, () => {
                 isThrottled: false,
                 throttleCache: {
                     errorName: {
-                        intervalCount: 100,
-                        throttleStartedAt: false,
+                        intervalCount: 600,
                     },
                 },
             },
         },
         {
-            it: 'resets when interval elapsed and threshold not surpassed',
+            it: 'resets count when interval has elapsed',
             inputs: [
                 new Map([
                     [
-                        'errorName',
+                        errorName,
                         {
-                            intervalCount: 10,
+                            intervalCount: 600,
                             intervalStartAt: calculateRelativeDate(now, {
                                 hours: -2,
-                            }),
-                            throttleStartedAt: calculateRelativeDate(now, {
-                                days: -2,
                             }),
                         },
                     ],
@@ -140,78 +134,13 @@ describe(shouldThrottleEvent.name, () => {
                 {
                     message: 'errorName',
                 },
+                {},
             ],
             expect: {
                 isThrottled: false,
                 throttleCache: {
                     errorName: {
-                        intervalCount: 0,
-                        throttleStartedAt: false,
-                    },
-                },
-            },
-        },
-        {
-            it: 'maintains throttle if interval is surpassed again',
-            inputs: [
-                new Map([
-                    [
-                        'errorName',
-                        {
-                            intervalCount: 200,
-                            intervalStartAt: calculateRelativeDate(now, {
-                                hours: -2,
-                            }),
-                            throttleStartedAt: calculateRelativeDate(now, {
-                                days: -3,
-                            }),
-                        },
-                    ],
-                ]),
-                {
-                    message: 'errorName',
-                },
-                {},
-            ],
-            expect: {
-                isThrottled: true,
-                throttleCache: {
-                    errorName: {
-                        intervalCount: 0,
-                        throttleStartedAt: true,
-                    },
-                },
-            },
-        },
-        {
-            it: 'does not record a throttle log when disabled',
-            inputs: [
-                new Map([
-                    [
-                        'errorName',
-                        {
-                            intervalCount: 200,
-                            intervalStartAt: calculateRelativeDate(now, {
-                                hours: -10,
-                            }),
-                            throttleStartedAt: undefined,
-                        },
-                    ],
-                ]),
-                {
-                    message: 'errorName',
-                },
-                {},
-                {
-                    disableThrottleLog: false,
-                },
-            ],
-            expect: {
-                isThrottled: true,
-                throttleCache: {
-                    errorName: {
-                        intervalCount: 0,
-                        throttleStartedAt: true,
+                        intervalCount: 1,
                     },
                 },
             },
@@ -232,10 +161,134 @@ describe(shouldThrottleEvent.name, () => {
                 throttleCache: {
                     errorName: {
                         intervalCount: 1,
-                        throttleStartedAt: false,
                     },
                 },
             },
         },
     ]);
+
+    it('counts near-duplicate messages toward the same throttle bucket', () => {
+        fuzzyErrorIndex.destroy();
+        throttleCache.clear();
+
+        const options = {
+            throttleThreshold: 3,
+            disableThrottleLog: true,
+        };
+        const variants = [
+            'Database query failed: id abc123 not found in users',
+            'Database query failed: id def456 not found in users',
+            'Database query failed: id 789xyz not found in users',
+            'Database query failed: id qwerty not found in users',
+        ];
+
+        const results = variants.map((message) =>
+            shouldThrottleEvent(
+                {
+                    message,
+                },
+                undefined,
+                options,
+            ),
+        );
+
+        assert.deepEquals(results, [
+            false,
+            false,
+            false,
+            true,
+        ]);
+        assert.strictEquals(fuzzyErrorIndex.clusterOrder.size, 1);
+        const [onlyEntry] = throttleCache.values();
+        assert.strictEquals(onlyEntry?.intervalCount, variants.length);
+    });
+
+    it('keeps unrelated messages in separate throttle buckets', () => {
+        fuzzyErrorIndex.destroy();
+        throttleCache.clear();
+
+        const options = {
+            throttleThreshold: 3,
+            disableThrottleLog: true,
+        };
+        const networkError = 'Network request to https://api.example.com/users timed out after 30s';
+        const parserError = 'SyntaxError: Unexpected token < in JSON at position 0 in response';
+
+        const messages = [
+            networkError,
+            networkError,
+            networkError,
+            parserError,
+            parserError,
+            parserError,
+        ];
+        const results = messages.map((message) =>
+            shouldThrottleEvent(
+                {
+                    message,
+                },
+                undefined,
+                options,
+            ),
+        );
+
+        assert.deepEquals(results, [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+        ]);
+        assert.strictEquals(fuzzyErrorIndex.clusterOrder.size, 2);
+        const counts = [...throttleCache.values()].map((entry) => entry.intervalCount);
+        assert.deepEquals(
+            counts,
+            [
+                3,
+                3,
+            ],
+        );
+    });
+
+    it('does not let an unrelated message tip an already-near-threshold bucket', () => {
+        fuzzyErrorIndex.destroy();
+        throttleCache.clear();
+
+        const options = {
+            throttleThreshold: 3,
+            disableThrottleLog: true,
+        };
+        const dbErrors = [
+            'Database query failed: id abc123 not found in users',
+            'Database query failed: id def456 not found in users',
+            'Database query failed: id 789xyz not found in users',
+        ];
+        const unrelated = 'SyntaxError: Unexpected token < in JSON at position 0 in response';
+
+        dbErrors.forEach((message) =>
+            assert.strictEquals(
+                shouldThrottleEvent(
+                    {
+                        message,
+                    },
+                    undefined,
+                    options,
+                ),
+                false,
+            ),
+        );
+        // An unrelated message goes to its own bucket; the db bucket stays at 3.
+        assert.strictEquals(
+            shouldThrottleEvent(
+                {
+                    message: unrelated,
+                },
+                undefined,
+                options,
+            ),
+            false,
+        );
+        assert.strictEquals(fuzzyErrorIndex.clusterOrder.size, 2);
+    });
 });
