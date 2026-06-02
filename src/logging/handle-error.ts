@@ -9,6 +9,7 @@ import {EventSeverityEnum} from '../event-context/event-severity.js';
 import {
     extractExtraAttachmentsFromSymbol,
     extractExtraEventThrottleThreshold,
+    extractExtraTagsFromSymbol,
 } from '../event-context/extra-event-context.js';
 import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console.js';
 import {skipBeforeSendThrottleContextKey} from '../processing/throttling.js';
@@ -59,10 +60,23 @@ function internalHandleError(
         const perCallThrottleThreshold = perCallThresholdCandidates.length
             ? Math.min(...perCallThresholdCandidates)
             : undefined;
+        const symbolTags = extractExtraTagsFromSymbol(error);
+        const combinedTags =
+            symbolTags == undefined && eventOptions?.tags == undefined
+                ? undefined
+                : {
+                      ...symbolTags,
+                      ...eventOptions?.tags,
+                  };
         if (
             checkActiveThrottle(
                 {
                     message: extractErrorMessage(error),
+                    ...(combinedTags
+                        ? {
+                              tags: combinedTags,
+                          }
+                        : {}),
                 },
                 {
                     originalException: error,

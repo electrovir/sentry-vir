@@ -11,6 +11,7 @@ import {
     type ContextOptions,
     type EventContextAndTags,
     type EventDetails,
+    type EventTags,
 } from '../event-context/event-context.js';
 import {EventSeverityEnum, type InfoEventSeverity} from '../event-context/event-severity.js';
 import {extractOriginalMessage} from '../processing/event-processor.js';
@@ -56,21 +57,23 @@ export const sendLog = {
  * @category Internal
  */
 export function throttleEventWithLogging(
-    event: Pick<TransactionEvent | ErrorEvent, 'message'>,
+    event: Pick<TransactionEvent | ErrorEvent, 'message' | 'tags'>,
     hint: Readonly<Pick<EventHint, 'originalException'>> | undefined,
     options: Readonly<PartialWithUndefined<ThrottleOptions>>,
 ): boolean {
     const result = shouldThrottleEvent(event, hint, options);
     const disableLog = options.disableThrottleLog ?? defaultThrottleOptions.disableThrottleLog;
     if (!disableLog && result.errorKey != undefined) {
+        const inheritedTags: EventTags = {
+            ...event.tags,
+            suppressedErrorKey: result.errorKey,
+        };
         if (result.transition.kind === 'started') {
             sendLog.warning(`Throttling started: ${result.errorKey}`, {
                 context: {
                     suppressedErrorKey: result.errorKey,
                 },
-                tags: {
-                    suppressedErrorKey: result.errorKey,
-                },
+                tags: inheritedTags,
             });
         } else if (result.transition.kind === 'ended') {
             sendLog.warning(
@@ -80,9 +83,7 @@ export function throttleEventWithLogging(
                         suppressedErrorKey: result.errorKey,
                         suppressedCount: result.transition.suppressedCount,
                     },
-                    tags: {
-                        suppressedErrorKey: result.errorKey,
-                    },
+                    tags: inheritedTags,
                 },
             );
         }
@@ -98,7 +99,7 @@ export function throttleEventWithLogging(
  * @category Internal
  */
 export function checkActiveThrottle(
-    event: Pick<TransactionEvent | ErrorEvent, 'message'>,
+    event: Pick<TransactionEvent | ErrorEvent, 'message' | 'tags'>,
     hint: Readonly<Pick<EventHint, 'originalException'>> | undefined,
     perCallThreshold: number | undefined,
 ): boolean {
@@ -174,6 +175,11 @@ function sendLogToSentry(
             checkActiveThrottle(
                 {
                     message: throttleMessage,
+                    ...(eventDetails.tags
+                        ? {
+                              tags: eventDetails.tags,
+                          }
+                        : {}),
                 },
                 undefined,
                 perCallThrottleThreshold,
