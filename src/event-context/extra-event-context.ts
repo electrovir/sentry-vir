@@ -1,6 +1,6 @@
 import {check} from '@augment-vir/assert';
 import {type Attachment, type Event, type EventHint} from '@sentry/core';
-import {type EventExtraContext, type EventTags} from './event-context.js';
+import {type EventExtraContext, type EventTags, type ThrottleOverride} from './event-context.js';
 
 /**
  * Symbol used to attach extra event context to events. This is particularly useful for errors so
@@ -21,10 +21,11 @@ export const extraEventTagsSymbol = Symbol('extra-event-tags');
 export const extraEventAttachmentsSymbol = Symbol('extra-event-attachments');
 
 /**
- * Symbol used to attach a per-event throttle threshold override. When present, throttling uses the
- * minimum of this value and the globally-configured `throttleThreshold`.
+ * Symbol used to attach a per-event throttle override to an event or error. The attached value is a
+ * {@link ThrottleOverride}: at most one of `threshold` (tighten throttling for this event) or
+ * `disabled` (bypass throttling entirely) may be set.
  */
-export const extraEventThrottleThresholdSymbol = Symbol('extra-event-throttle-threshold');
+export const extraEventThrottleSymbol = Symbol('extra-event-throttle');
 
 /** Simply describes an object that has extra event context. */
 export type HasExtraContext = {[extraEventContextSymbol]: EventExtraContext};
@@ -35,8 +36,8 @@ export type HasExtraTags = {[extraEventTagsSymbol]: EventTags};
 /** Simply describes an object that has extra event attachments. */
 export type HasExtraAttachments = {[extraEventAttachmentsSymbol]: ReadonlyArray<Attachment>};
 
-/** Simply describes an object that has a per-event throttle threshold override. */
-export type HasExtraThrottleThreshold = {[extraEventThrottleThresholdSymbol]: number};
+/** Simply describes an object that carries a per-event throttle override. */
+export type HasExtraThrottle = {[extraEventThrottleSymbol]: ThrottleOverride};
 
 /** Type guard for whether any given input has extra event context. */
 export function hasExtraEventContext(input: unknown): input is HasExtraContext {
@@ -53,12 +54,9 @@ export function hasExtraEventAttachments(input: unknown): input is HasExtraAttac
     return check.hasKey(input, extraEventAttachmentsSymbol) && !!input[extraEventAttachmentsSymbol];
 }
 
-/** Type guard for whether any given input carries a per-event throttle threshold override. */
-export function hasExtraEventThrottleThreshold(input: unknown): input is HasExtraThrottleThreshold {
-    return (
-        check.hasKey(input, extraEventThrottleThresholdSymbol) &&
-        check.isNumber(input[extraEventThrottleThresholdSymbol])
-    );
+/** Type guard for whether any given input carries a per-event throttle override. */
+export function hasExtraEventThrottle(input: unknown): input is HasExtraThrottle {
+    return check.hasKey(input, extraEventThrottleSymbol) && !!input[extraEventThrottleSymbol];
 }
 
 /**
@@ -174,16 +172,14 @@ export function extractExtraEventAttachments(
 }
 
 /**
- * Tries to extract a per-event throttle threshold via extraEventThrottleThresholdSymbol from the
- * input itself or its originalException. Returns undefined if none is set.
+ * Tries to extract a per-event {@link ThrottleOverride} via extraEventThrottleSymbol from the input
+ * itself or its originalException. Returns `undefined` if none is set.
  */
-export function extractExtraEventThrottleThreshold(event: EventHint | Event): number | undefined {
-    const fromRoot = hasExtraEventThrottleThreshold(event)
-        ? event[extraEventThrottleThresholdSymbol]
-        : undefined;
+export function extractExtraEventThrottle(event: EventHint | Event): ThrottleOverride | undefined {
+    const fromRoot = hasExtraEventThrottle(event) ? event[extraEventThrottleSymbol] : undefined;
     const fromException =
-        'originalException' in event && hasExtraEventThrottleThreshold(event.originalException)
-            ? event.originalException[extraEventThrottleThresholdSymbol]
+        'originalException' in event && hasExtraEventThrottle(event.originalException)
+            ? event.originalException[extraEventThrottleSymbol]
             : undefined;
     return fromRoot ?? fromException;
 }

@@ -12,6 +12,7 @@ import {
     type EventContextAndTags,
     type EventDetails,
     type EventTags,
+    type ThrottleOverride,
 } from '../event-context/event-context.js';
 import {EventSeverityEnum, type InfoEventSeverity} from '../event-context/event-severity.js';
 import {extractOriginalMessage} from '../processing/event-processor.js';
@@ -127,7 +128,7 @@ function wrapLogWithSeverity(severity: EventSeverityEnum) {
             {
                 wasSentPrematurely: false,
             },
-            eventOptions?.throttleThreshold,
+            eventOptions?.throttle,
         );
     };
 }
@@ -136,7 +137,7 @@ function sendLogToSentry(
     logInfo: SendLogInfo,
     eventDetails: EventDetails,
     options: ContextOptions,
-    perCallThrottleThreshold: number | undefined,
+    perCallThrottle: ThrottleOverride | undefined,
 ): string | undefined {
     try {
         /**
@@ -163,29 +164,31 @@ function sendLogToSentry(
                 {
                     wasSentPrematurely: true,
                 },
-                perCallThrottleThreshold,
+                perCallThrottle,
             ]);
             return undefined;
         }
 
-        const throttleMessage = check.isString(resolvedLogInfo)
-            ? resolvedLogInfo
-            : extractOriginalMessage(resolvedLogInfo, undefined);
-        if (
-            checkActiveThrottle(
-                {
-                    message: throttleMessage,
-                    ...(eventDetails.tags
-                        ? {
-                              tags: eventDetails.tags,
-                          }
-                        : {}),
-                },
-                undefined,
-                perCallThrottleThreshold,
-            )
-        ) {
-            return undefined;
+        if (perCallThrottle?.disabled !== true) {
+            const throttleMessage = check.isString(resolvedLogInfo)
+                ? resolvedLogInfo
+                : extractOriginalMessage(resolvedLogInfo, undefined);
+            if (
+                checkActiveThrottle(
+                    {
+                        message: throttleMessage,
+                        ...(eventDetails.tags
+                            ? {
+                                  tags: eventDetails.tags,
+                              }
+                            : {}),
+                    },
+                    undefined,
+                    perCallThrottle?.threshold,
+                )
+            ) {
+                return undefined;
+            }
         }
 
         const scopeContext = convertEventDetailsToSentryContext(eventDetails, options);

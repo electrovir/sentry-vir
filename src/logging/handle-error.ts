@@ -8,7 +8,7 @@ import {
 import {EventSeverityEnum} from '../event-context/event-severity.js';
 import {
     extractExtraAttachmentsFromSymbol,
-    extractExtraEventThrottleThreshold,
+    extractExtraEventThrottle,
     extractExtraTagsFromSymbol,
 } from '../event-context/extra-event-context.js';
 import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console.js';
@@ -51,40 +51,45 @@ function internalHandleError(
             return undefined;
         }
 
-        const perCallThresholdCandidates = [
-            extractExtraEventThrottleThreshold({
-                originalException: error,
-            }),
-            eventOptions?.throttleThreshold,
-        ].filter((value): value is number => value != undefined);
-        const perCallThrottleThreshold = perCallThresholdCandidates.length
-            ? Math.min(...perCallThresholdCandidates)
-            : undefined;
-        const symbolTags = extractExtraTagsFromSymbol(error);
-        const combinedTags =
-            symbolTags == undefined && eventOptions?.tags == undefined
-                ? undefined
-                : {
-                      ...symbolTags,
-                      ...eventOptions?.tags,
-                  };
-        if (
-            checkActiveThrottle(
-                {
-                    message: extractErrorMessage(error),
-                    ...(combinedTags
-                        ? {
-                              tags: combinedTags,
-                          }
-                        : {}),
-                },
-                {
-                    originalException: error,
-                },
-                perCallThrottleThreshold,
-            )
-        ) {
-            return undefined;
+        const errorThrottleOverride = extractExtraEventThrottle({
+            originalException: error,
+        });
+        const disableThrottling =
+            eventOptions?.throttle?.disabled === true || errorThrottleOverride?.disabled === true;
+        if (!disableThrottling) {
+            const perCallThresholdCandidates = [
+                errorThrottleOverride?.threshold,
+                eventOptions?.throttle?.threshold,
+            ].filter((value): value is number => value != undefined);
+            const perCallThrottleThreshold = perCallThresholdCandidates.length
+                ? Math.min(...perCallThresholdCandidates)
+                : undefined;
+            const symbolTags = extractExtraTagsFromSymbol(error);
+            const combinedTags =
+                symbolTags == undefined && eventOptions?.tags == undefined
+                    ? undefined
+                    : {
+                          ...symbolTags,
+                          ...eventOptions?.tags,
+                      };
+            if (
+                checkActiveThrottle(
+                    {
+                        message: extractErrorMessage(error),
+                        ...(combinedTags
+                            ? {
+                                  tags: combinedTags,
+                              }
+                            : {}),
+                    },
+                    {
+                        originalException: error,
+                    },
+                    perCallThrottleThreshold,
+                )
+            ) {
+                return undefined;
+            }
         }
 
         const scopeContext = convertEventDetailsToSentryContext(

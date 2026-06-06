@@ -345,6 +345,38 @@ describe(shouldThrottleEvent.name, () => {
         assert.strictEquals(isThrottled(event, undefined, options), true);
     });
 
+    it('skips throttling entirely when disableThrottling is set in the options', () => {
+        fuzzyErrorIndex.destroy();
+        throttleCache.clear();
+
+        const options = {
+            throttleThreshold: 2,
+            disableThrottling: true,
+            disableThrottleLog: true,
+        };
+        const event = {
+            message: 'never throttled message alpha beta gamma',
+        };
+
+        const results = [
+            isThrottled(event, undefined, options),
+            isThrottled(event, undefined, options),
+            isThrottled(event, undefined, options),
+            isThrottled(event, undefined, options),
+            isThrottled(event, undefined, options),
+        ];
+
+        assert.deepEquals(results, [
+            false,
+            false,
+            false,
+            false,
+            false,
+        ]);
+        // The event was never bucketed because throttling was disabled.
+        assert.strictEquals(fuzzyErrorIndex.clusterOrder.size, 0);
+    });
+
     it('ignores a per-call throttle threshold that is looser than the global threshold', () => {
         fuzzyErrorIndex.destroy();
         throttleCache.clear();

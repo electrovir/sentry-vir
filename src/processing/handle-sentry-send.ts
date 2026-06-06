@@ -1,7 +1,7 @@
 import {type PartialWithUndefined} from '@augment-vir/common';
 import {type EventHint} from '@sentry/browser';
 import {type ErrorEvent, type TransactionEvent} from '@sentry/core';
-import {extractExtraEventThrottleThreshold} from '../event-context/extra-event-context.js';
+import {extractExtraEventThrottle} from '../event-context/extra-event-context.js';
 import {throttleEventWithLogging} from '../logging/send-log.js';
 import {LoggingState, logToConsoleFromSentry} from './log-to-console.js';
 import {
@@ -35,17 +35,17 @@ export function createSentryHandler<T extends TransactionEvent | ErrorEvent>({
             delete event.contexts[skipBeforeSendThrottleContextKey];
         }
 
-        if (!wasPreThrottled) {
-            const perEventThreshold = extractExtraEventThrottleThreshold(hint);
-            if (
-                throttleEventWithLogging(
-                    event,
-                    hint,
-                    combineThrottleThreshold(throttleOptions, perEventThreshold),
-                )
-            ) {
-                return null;
-            }
+        const eventThrottleOverride = extractExtraEventThrottle(hint);
+        if (
+            !wasPreThrottled &&
+            eventThrottleOverride?.disabled !== true &&
+            throttleEventWithLogging(
+                event,
+                hint,
+                combineThrottleThreshold(throttleOptions, eventThrottleOverride?.threshold),
+            )
+        ) {
+            return null;
         }
 
         if (!event.extra?.wasSentPrematurely) {

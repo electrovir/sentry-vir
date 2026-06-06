@@ -1,11 +1,16 @@
 import {ensureError} from '@augment-vir/common';
 import {type Attachment} from '@sentry/core';
-import {type EventContextAndTags, type EventExtraContext, type EventTags} from './event-context.js';
+import {
+    type EventContextAndTags,
+    type EventExtraContext,
+    type EventTags,
+    type ThrottleOverride,
+} from './event-context.js';
 import {
     extraEventAttachmentsSymbol,
     extraEventContextSymbol,
     extraEventTagsSymbol,
-    extraEventThrottleThresholdSymbol,
+    extraEventThrottleSymbol,
     type HasExtraAttachments,
     type HasExtraContext,
 } from './extra-event-context.js';
@@ -25,7 +30,7 @@ export class ExtraContextError extends Error {
     public readonly [extraEventContextSymbol]: EventExtraContext | undefined;
     public readonly [extraEventTagsSymbol]: EventTags | undefined;
     public readonly [extraEventAttachmentsSymbol]: ReadonlyArray<Attachment> | undefined;
-    public readonly [extraEventThrottleThresholdSymbol]: number | undefined;
+    public readonly [extraEventThrottleSymbol]: ThrottleOverride | undefined;
 
     constructor(message: string, extraData: EventContextAndTags) {
         super(message);
@@ -38,8 +43,8 @@ export class ExtraContextError extends Error {
         if (extraData.attachments) {
             this[extraEventAttachmentsSymbol] = extraData.attachments;
         }
-        if (extraData.throttleThreshold != undefined) {
-            this[extraEventThrottleThresholdSymbol] = extraData.throttleThreshold;
+        if (extraData.throttle) {
+            this[extraEventThrottleSymbol] = extraData.throttle;
         }
     }
 }
@@ -56,7 +61,7 @@ export function throwWithExtraContext(
         HasExtraAttachments &
         HasExtraContext & {
             [extraEventTagsSymbol]?: EventTags;
-            [extraEventThrottleThresholdSymbol]?: number;
+            [extraEventThrottleSymbol]?: ThrottleOverride;
         };
     if (extraData.context) {
         error[extraEventContextSymbol] = extraData.context;
@@ -67,8 +72,8 @@ export function throwWithExtraContext(
     if (extraData.attachments) {
         error[extraEventAttachmentsSymbol] = extraData.attachments;
     }
-    if (extraData.throttleThreshold != undefined) {
-        error[extraEventThrottleThresholdSymbol] = extraData.throttleThreshold;
+    if (extraData.throttle) {
+        error[extraEventThrottleSymbol] = extraData.throttle;
     }
 
     throw error;

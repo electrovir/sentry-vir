@@ -4,6 +4,7 @@ import {
     safeCopyThroughJson,
 } from '@augment-vir/common';
 import {type Attachment, type ScopeContext, type setTags} from '@sentry/core';
+import {type RequireOneOrNone} from 'type-fest';
 import {type EventSeverityEnum} from './event-severity.js';
 
 export type {Attachment} from '@sentry/core';
@@ -26,11 +27,31 @@ export type EventContextAndTags = PartialWithUndefined<{
     tags: EventTags;
     attachments: ReadonlyArray<Attachment>;
     /**
+     * Per-event throttle override. At most one of `threshold` / `disabled` may be set: `threshold`
+     * tightens throttling for this event, `disabled` bypasses it entirely.
+     */
+    throttle: ThrottleOverride;
+}>;
+
+/**
+ * Per-event throttle override carried alongside an event. At most one of `threshold` / `disabled`
+ * may be set on a single override.
+ *
+ * @category Internal
+ */
+export type ThrottleOverride = RequireOneOrNone<{
+    /**
      * Per-event throttle threshold override. When set, throttling for this event uses the minimum
      * of this value and the globally-configured `throttleThreshold`, allowing individual log calls
      * to be throttled more aggressively than the global default.
      */
-    throttleThreshold: number;
+    threshold: number;
+    /**
+     * When `true`, this event bypasses the throttle check entirely — it is always forwarded to
+     * Sentry and does not count against its cluster's interval bucket. Useful for important events
+     * that should never be dropped (e.g. critical alerts).
+     */
+    disabled: boolean;
 }>;
 
 /** Function that generates extra event context. */
