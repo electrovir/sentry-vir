@@ -7,6 +7,7 @@ export * from './init-sentry/base-sentry-init.js';
 export * from './init-sentry/sentry-config.js';
 export * from './logging/attach-tags.js';
 export * from './logging/handle-error.js';
+export * from './logging/logging-disabled.js';
 export * from './logging/send-log.js';
 export * from './logging/sentry-client-for-logging.js';
 export * from './processing/event-processor.js';

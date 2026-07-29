@@ -1,5 +1,9 @@
 import {type SentryDep, type SentryDepByEnv, SentryExecutionEnvEnum} from './env/execution-env.js';
-import {type InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init.js';
+import {
+    type InitSentryInput,
+    type SentryVirClient,
+    baseInitSentry,
+} from './init-sentry/base-sentry-init.js';
 
 /** A function which imports a Sentry dep. */
 export type SentryDepImporter = () => Promise<SentryDep>;
@@ -36,11 +40,12 @@ export async function autoInitSentry({
     createUniversalContext,
     isDev,
     silent,
+    disableLogging,
     throttleOptions,
-}: InitSentryInput): Promise<SentryDep> {
+}: InitSentryInput): Promise<SentryVirClient> {
     const sentryDep = await getSentryByEnv(executionEnv);
 
-    await baseInitSentry({
+    return await baseInitSentry({
         dsn,
         releaseEnv,
         releaseName,
@@ -50,8 +55,7 @@ export async function autoInitSentry({
         executionEnv,
         isDev,
         silent,
+        disableLogging,
         throttleOptions,
     });
-
-    return sentryDep;
 }

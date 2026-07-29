@@ -25,6 +25,7 @@ import {
     skipBeforeSendThrottleContextKey,
     type ThrottleOptions,
 } from '../processing/throttling.js';
+import {isLoggingDisabled} from './logging-disabled.js';
 import {addPrematureEvent} from './premature-events.js';
 import {sentryClientForLogging} from './sentry-client-for-logging.js';
 
@@ -116,29 +117,38 @@ export function checkActiveThrottle(
 }
 
 function wrapLogWithSeverity(severity: EventSeverityEnum) {
-    return (info: Parameters<typeof sendLogToSentry>[0], eventOptions?: EventContextAndTags) => {
-        return sendLogToSentry(
-            info,
-            {
+    return (info: SendLogInfo, eventOptions?: EventContextAndTags) => {
+        return sendLogToSentry({
+            logInfo: info,
+            eventDetails: {
                 extraContext: eventOptions?.context,
                 tags: eventOptions?.tags,
                 attachments: eventOptions?.attachments,
                 severity,
             },
-            {
+            options: {
                 wasSentPrematurely: false,
             },
-            eventOptions?.throttle,
-        );
+            perCallThrottle: eventOptions?.throttle,
+        });
     };
 }
 
-function sendLogToSentry(
-    logInfo: SendLogInfo,
-    eventDetails: EventDetails,
-    options: ContextOptions,
-    perCallThrottle: ThrottleOverride | undefined,
-): string | undefined {
+function sendLogToSentry({
+    logInfo,
+    eventDetails,
+    options,
+    perCallThrottle,
+}: Readonly<{
+    logInfo: SendLogInfo;
+    eventDetails: EventDetails;
+    options: ContextOptions;
+    perCallThrottle: ThrottleOverride | undefined;
+}>): string | undefined {
+    if (isLoggingDisabled()) {
+        return undefined;
+    }
+
     try {
         /**
          * `Error.message` is not enumerable, so spreading an `Error` into `captureEvent` would lose
@@ -159,12 +169,14 @@ function sendLogToSentry(
                 originalException: undefined,
             });
             addPrematureEvent(sendLogToSentry, [
-                resolvedLogInfo,
-                eventDetails,
                 {
-                    wasSentPrematurely: true,
+                    logInfo: resolvedLogInfo,
+                    eventDetails,
+                    options: {
+                        wasSentPrematurely: true,
+                    },
+                    perCallThrottle,
                 },
-                perCallThrottle,
             ]);
             return undefined;
         }

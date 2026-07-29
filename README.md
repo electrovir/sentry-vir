@@ -15,6 +15,7 @@ Full api reference: https://electrovir.github.io/sentry-vir
 -   Use `initSentry` to initialize Sentry.
 -   Use `sendLog` and `handleError` to send events to Sentry.
 -   Use `throwWithExtraContext` to throw an error while attaching extra event context for Sentry to pick up.
+-   Use `setLoggingDisabled` (on the client returned from `initSentry`, or imported directly) to globally turn all logging on or off.
 
 ## Basic setup example
 
@@ -37,6 +38,36 @@ initSentry({
         };
     },
 });
+```
+
+## Globally disabling logging
+
+`initSentry` returns the Sentry client with a `setLoggingDisabled` method attached. While logging is disabled, `sendLog` and `handleError` calls are dropped entirely (nothing is sent to Sentry, nothing is logged to the console, and nothing is buffered for a later send) and events captured directly through the Sentry SDK are dropped as well. Set `disableLogging: true` in the `initSentry` input to start out disabled.
+
+The same control is available as the exported `setLoggingDisabled` and `isLoggingDisabled` functions, for code that doesn't have the client on hand.
+
+<!-- example-link: src/readme-examples/disable-logging.example.ts -->
+
+```TypeScript
+import {sendLog} from 'sentry-vir';
+import {initSentry} from 'sentry-vir/dist/browser.js';
+
+const sentry = await initSentry({
+    dsn: 'Sentry project id provided by Sentry',
+    releaseEnv: 'dev',
+    releaseName: 'my release',
+    isDev: false,
+    /** Optional: start with all logging disabled. */
+    disableLogging: true,
+});
+
+/** Dropped: nothing is sent to Sentry and nothing is logged to the console. */
+sendLog.info('not logged');
+
+sentry.setLoggingDisabled(false);
+
+/** Handled normally now. */
+sendLog.info('logged');
 ```
 
 ## Logging example

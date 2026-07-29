@@ -27,6 +27,7 @@ import {
  * 'hi'}});
  */
 export class ExtraContextError extends Error {
+    public override readonly name = 'ExtraContextError';
     public readonly [extraEventContextSymbol]: EventExtraContext | undefined;
     public readonly [extraEventTagsSymbol]: EventTags | undefined;
     public readonly [extraEventAttachmentsSymbol]: ReadonlyArray<Attachment> | undefined;

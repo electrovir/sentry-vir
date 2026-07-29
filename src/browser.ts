@@ -1,7 +1,12 @@
 import {type SentryBrowserDep, SentryExecutionEnvEnum} from './env/execution-env.js';
-import {type InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init.js';
+import {
+    type InitSentryInput,
+    type SentryVirClient,
+    baseInitSentry,
+    createSentryVirClient,
+} from './init-sentry/base-sentry-init.js';
 
-export type Sentry = SentryBrowserDep;
+export type SentryBrowserClient = SentryVirClient<SentryBrowserDep>;
 
 /**
  * Base Sentry init. Requires the Sentry module to already have been imported. Setup a sentry client
@@ -17,9 +22,10 @@ export async function initSentry({
     createUniversalContext,
     isDev,
     silent,
+    disableLogging,
     throttleOptions,
-}: Omit<InitSentryInput, 'executionEnv'>): Promise<Sentry> {
-    const sentryDep = await import('@sentry/browser');
+}: Omit<InitSentryInput, 'executionEnv'>): Promise<SentryBrowserClient> {
+    const sentryDep: SentryBrowserDep = await import('@sentry/browser');
 
     await baseInitSentry({
         dsn,
@@ -31,8 +37,9 @@ export async function initSentry({
         executionEnv: SentryExecutionEnvEnum.Browser,
         isDev,
         silent,
+        disableLogging,
         throttleOptions,
     });
 
-    return sentryDep;
+    return createSentryVirClient(sentryDep);
 }

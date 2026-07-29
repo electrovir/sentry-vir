@@ -13,6 +13,7 @@ import {
 } from '../event-context/extra-event-context.js';
 import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console.js';
 import {skipBeforeSendThrottleContextKey} from '../processing/throttling.js';
+import {isLoggingDisabled} from './logging-disabled.js';
 import {addPrematureEvent} from './premature-events.js';
 import {checkActiveThrottle} from './send-log.js';
 import {sentryClientForLogging} from './sentry-client-for-logging.js';
@@ -32,6 +33,10 @@ function internalHandleError(
     eventOptions: EventContextAndTags | undefined,
     options: ContextOptions,
 ) {
+    if (isLoggingDisabled()) {
+        return undefined;
+    }
+
     try {
         if (!sentryClientForLogging) {
             logToConsoleWithoutSentry(EventSeverityEnum.Error, LoggingState.NoSentryYet, {

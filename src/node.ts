@@ -1,7 +1,12 @@
 import {SentryExecutionEnvEnum, type SentryNodeDep} from './env/execution-env.js';
-import {type InitSentryInput, baseInitSentry} from './init-sentry/base-sentry-init.js';
+import {
+    type InitSentryInput,
+    type SentryVirClient,
+    baseInitSentry,
+    createSentryVirClient,
+} from './init-sentry/base-sentry-init.js';
 
-export type Sentry = SentryNodeDep;
+export type SentryNodeClient = SentryVirClient<SentryNodeDep>;
 
 /**
  * Base Sentry init. Requires the Sentry module to already have been imported. Setup a sentry client
@@ -17,9 +22,10 @@ export async function initSentry({
     createUniversalContext,
     isDev,
     silent,
+    disableLogging,
     throttleOptions,
-}: Omit<InitSentryInput, 'executionEnv'>): Promise<SentryNodeDep> {
-    const sentryDep = await import('@sentry/node');
+}: Omit<InitSentryInput, 'executionEnv'>): Promise<SentryNodeClient> {
+    const sentryDep: SentryNodeDep = await import('@sentry/node');
 
     await baseInitSentry({
         dsn,
@@ -31,8 +37,9 @@ export async function initSentry({
         executionEnv: SentryExecutionEnvEnum.Node,
         isDev,
         silent,
+        disableLogging,
         throttleOptions,
     });
 
-    return sentryDep;
+    return createSentryVirClient(sentryDep);
 }

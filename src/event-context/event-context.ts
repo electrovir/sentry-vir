@@ -1,10 +1,10 @@
 import {
     type JsonCompatibleObject,
     type PartialWithUndefined,
+    type RequireOneOrNone,
     safeCopyThroughJson,
 } from '@augment-vir/common';
 import {type Attachment, type ScopeContext, type setTags} from '@sentry/core';
-import {type RequireOneOrNone} from 'type-fest';
 import {type EventSeverityEnum} from './event-severity.js';
 
 export type {Attachment} from '@sentry/core';

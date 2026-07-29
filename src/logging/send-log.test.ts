@@ -1,80 +1,9 @@
 import {assert} from '@augment-vir/assert';
 import {describe, it} from '@augment-vir/test';
-import {
-    type Attachment,
-    type CaptureContext,
-    type Scope,
-    type Event as SentryEvent,
-    type SeverityLevel,
-} from '@sentry/core';
+import {setLoggingDisabled} from './logging-disabled.js';
 import {sendLog} from './send-log.js';
-import {
-    setSentryClientForLogging,
-    type SentryClientForLogging,
-} from './sentry-client-for-logging.js';
-
-function createMockSentryClient() {
-    const capturedMessages: {
-        message: string;
-        captureContext: CaptureContext | SeverityLevel | undefined;
-    }[] = [];
-    const capturedEvents: SentryEvent[] = [];
-    const capturedAttachments: Attachment[] = [];
-    const capturedContexts: {
-        name: string;
-        context: unknown;
-    }[] = [];
-
-    const mockClient: SentryClientForLogging = {
-        captureMessage(message: string, captureContext?: CaptureContext | SeverityLevel) {
-            capturedMessages.push({
-                message,
-                captureContext,
-            });
-            return 'mock-message-id';
-        },
-        captureException() {
-            return 'mock-exception-id';
-        },
-        captureEvent(event) {
-            capturedEvents.push(event);
-            return 'mock-event-id';
-        },
-        setTags() {},
-        withScope(
-            ...args:
-                | [
-                      Scope | undefined,
-                      (scope: Scope) => unknown,
-                  ]
-                | [(scope: Scope) => unknown]
-        ) {
-            const callback = args.length === 1 ? args[0] : args[1];
-            const mockScope = {
-                addAttachment(attachment: Attachment) {
-                    capturedAttachments.push(attachment);
-                    return mockScope;
-                },
-                setContext(name: string, context: unknown) {
-                    capturedContexts.push({
-                        name,
-                        context,
-                    });
-                    return mockScope;
-                },
-            } as Scope;
-            return callback(mockScope);
-        },
-    };
-
-    return {
-        mockClient,
-        capturedMessages,
-        capturedEvents,
-        capturedAttachments,
-        capturedContexts,
-    };
-}
+import {setSentryClientForLogging} from './sentry-client-for-logging.js';
+import {createMockSentryClient} from './sentry-client-for-logging.mock.js';
 
 describe('sendLog', () => {
     it('sends a string message via captureMessage', async () => {
@@ -191,5 +120,21 @@ describe('sendLog', () => {
         assert.isLengthExactly(capturedMessages, 1);
         assert.isLengthExactly(capturedAttachments, 0);
         assert.isLengthExactly(capturedContexts, 1);
+    });
+
+    it('captures nothing while logging is globally disabled', async () => {
+        const {mockClient, capturedMessages} = createMockSentryClient();
+        await setSentryClientForLogging(mockClient);
+
+        try {
+            setLoggingDisabled(true);
+            sendLog.warning('suppressed message');
+            assert.isLengthExactly(capturedMessages, 0);
+        } finally {
+            setLoggingDisabled(false);
+        }
+
+        sendLog.warning('message after re-enabling');
+        assert.isLengthExactly(capturedMessages, 1);
     });
 });

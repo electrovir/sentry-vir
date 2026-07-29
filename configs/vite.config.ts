@@ -1,4 +1,4 @@
-import {defineConfig} from '@virmator/frontend/configs/vite.config.base.ts';
+import {defineConfig} from '@virmator/frontend/configs/vite.config.base.js';
 import {readFile} from 'node:fs/promises';
 import {join, resolve} from 'node:path';
 
