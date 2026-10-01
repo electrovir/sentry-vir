@@ -29,13 +29,25 @@ import {isLoggingDisabled} from './logging-disabled.js';
 import {addPrematureEvent} from './premature-events.js';
 import {sentryClientForLogging} from './sentry-client-for-logging.js';
 
-/** A Sentry event object without the fields that are set by the logging context. */
+/**
+ * A Sentry event object without the fields that are set by the logging context.
+ *
+ * @category Internal
+ */
 export type SendLogEvent = Omit<SentryEvent, 'extra' | 'level'>;
 
-/** All accepted input types for `sendLog`. Strings, Error objects, and raw Sentry events. */
+/**
+ * All accepted input types for `sendLog`. Strings, Error objects, and raw Sentry events.
+ *
+ * @category Internal
+ */
 export type SendLogInfo = string | Error | SendLogEvent;
 
-/** Send non-error events to Sentry. */
+/**
+ * Send non-error events to Sentry.
+ *
+ * @category Internal
+ */
 export const sendLog = {
     /** Sends an even to Sentry with debug severity. */
     [EventSeverityEnum.Debug]: wrapLogWithSeverity(EventSeverityEnum.Debug),

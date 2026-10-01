@@ -187,15 +187,15 @@ describe(shouldThrottleEvent.name, () => {
             'Database query failed: id qwerty not found in users',
         ];
 
-        const results = variants.map((message) =>
-            isThrottled(
+        const results = variants.map((message) => {
+            return isThrottled(
                 {
                     message,
                 },
                 undefined,
                 options,
-            ),
-        );
+            );
+        });
 
         assert.deepEquals(results, [
             false,
@@ -227,15 +227,15 @@ describe(shouldThrottleEvent.name, () => {
             parserError,
             parserError,
         ];
-        const results = messages.map((message) =>
-            isThrottled(
+        const results = messages.map((message) => {
+            return isThrottled(
                 {
                     message,
                 },
                 undefined,
                 options,
-            ),
-        );
+            );
+        });
 
         assert.deepEquals(results, [
             false,
@@ -271,8 +271,8 @@ describe(shouldThrottleEvent.name, () => {
         ];
         const unrelated = 'SyntaxError: Unexpected token < in JSON at position 0 in response';
 
-        dbErrors.forEach((message) =>
-            assert.strictEquals(
+        dbErrors.forEach((message) => {
+            return assert.strictEquals(
                 isThrottled(
                     {
                         message,
@@ -281,8 +281,8 @@ describe(shouldThrottleEvent.name, () => {
                     options,
                 ),
                 false,
-            ),
-        );
+            );
+        });
         // An unrelated message goes to its own bucket; the db bucket stays at 3.
         assert.strictEquals(
             isThrottled(

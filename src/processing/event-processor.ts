@@ -15,7 +15,11 @@ import {
     extractExtraEventTags,
 } from '../event-context/extra-event-context.js';
 
-/** Attach extra event data for a sentry event. */
+/**
+ * Attach extra event data for a sentry event.
+ *
+ * @category Internal
+ */
 export function processSentryEvent(
     /** Event from Sentry. */
     event: SentryEvent,
@@ -64,7 +68,11 @@ export function processSentryEvent(
     return event;
 }
 
-/** Tries to extract the original event message from different possible Sentry types. */
+/**
+ * Tries to extract the original event message from different possible Sentry types.
+ *
+ * @category Internal
+ */
 export function extractOriginalMessage(
     /** Event from Sentry. */
     event: Pick<TransactionEvent | ErrorEvent, 'message'>,

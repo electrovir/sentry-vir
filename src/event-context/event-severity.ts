@@ -1,7 +1,11 @@
 import {check} from '@augment-vir/assert';
 import {type Event as SentryEvent} from '@sentry/browser';
 
-/** Mapped from Sentry's values into an enum for convenience of use. */
+/**
+ * Mapped from Sentry's values into an enum for convenience of use.
+ *
+ * @category Internal
+ */
 export enum EventSeverityEnum {
     Warning = 'warning',
     Info = 'info',
@@ -10,13 +14,21 @@ export enum EventSeverityEnum {
     Error = 'error',
 }
 
-/** Event severities that are not error-level. */
+/**
+ * Event severities that are not error-level.
+ *
+ * @category Internal
+ */
 export type InfoEventSeverity =
     | EventSeverityEnum.Debug
     | EventSeverityEnum.Info
     | EventSeverityEnum.Warning;
 
-/** Maps severities to the console methods used to log them. */
+/**
+ * Maps severities to the console methods used to log them.
+ *
+ * @category Internal
+ */
 export const consoleLogMethodPerSeverity: Readonly<
     Record<EventSeverityEnum, (typeof console)['log']>
 > = {
@@ -33,7 +45,11 @@ export const consoleLogMethodPerSeverity: Readonly<
     [EventSeverityEnum.Error]: console.error,
 };
 
-/** Extracts the severity level from a sentry event while defaulting to an info level severity. */
+/**
+ * Extracts the severity level from a sentry event while defaulting to an info level severity.
+ *
+ * @category Internal
+ */
 export function extractEventSeverity(event: SentryEvent): EventSeverityEnum {
     if (!check.isEnumValue(event.level, EventSeverityEnum)) {
         return EventSeverityEnum.Info;

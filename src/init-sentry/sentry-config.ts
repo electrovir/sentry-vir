@@ -11,12 +11,24 @@ import {
 import {createSentryHandler} from '../processing/handle-sentry-send.js';
 import {type ThrottleOptions} from '../processing/throttling.js';
 
-/** Optional UserOverrides of Sentry config values. */
+/**
+ * Optional UserOverrides of Sentry config values.
+ *
+ * @category Internal
+ */
 export type UserOverrides = Omit<Partial<Options>, keyof RequiredSentryOptions> | undefined;
-/** Sentry config options that are required. */
+/**
+ * Sentry config options that are required.
+ *
+ * @category Internal
+ */
 export type RequiredSentryOptions = Pick<Required<Options>, 'dsn' | 'environment' | 'release'>;
 
-/** Creates the sentry config used internally by sentry-vir. */
+/**
+ * Creates the sentry config used internally by sentry-vir.
+ *
+ * @category Internal
+ */
 export function createSentryConfig<const ExecutionEnv extends SentryExecutionEnvEnum>({
     executionEnv,
     sentryDep,

@@ -12,15 +12,23 @@ export type {Attachment} from '@sentry/core';
 /**
  * Used for all extra context types. While keys must be strings, values can be whatever but must be
  * JSON compatible.
+ *
+ * @category Internal
  */
 export type EventExtraContext = JsonCompatibleObject;
 
-/** Allowed tag value types for Sentry event tags. */
+/**
+ * Allowed tag value types for Sentry event tags.
+ *
+ * @category Internal
+ */
 export type EventTags = Parameters<typeof setTags>[0];
 
 /**
  * Combined context, tags, and attachments parameter used for event logging functions. All
  * properties are optional.
+ *
+ * @category Internal
  */
 export type EventContextAndTags = PartialWithUndefined<{
     context: EventExtraContext;
@@ -54,10 +62,18 @@ export type ThrottleOverride = RequireOneOrNone<{
     disabled: boolean;
 }>;
 
-/** Function that generates extra event context. */
+/**
+ * Function that generates extra event context.
+ *
+ * @category Internal
+ */
 export type EventExtraContextCreator = () => EventExtraContext;
 
-/** Event details before getting sent to Sentry. */
+/**
+ * Event details before getting sent to Sentry.
+ *
+ * @category Internal
+ */
 export type EventDetails = {
     extraContext?: EventExtraContext | undefined;
     tags?: EventTags | undefined;
@@ -65,7 +81,11 @@ export type EventDetails = {
     severity: EventSeverityEnum;
 };
 
-/** Options for creating contexts. Used internally. */
+/**
+ * Options for creating contexts. Used internally.
+ *
+ * @category Internal
+ */
 export type ContextOptions = {
     /**
      * If true, this means the message was sent before Sentry was initialized, which slightly
@@ -77,6 +97,8 @@ export type ContextOptions = {
 /**
  * Maps internal EventDetails type to Sentry's required type for event severity, extra context, and
  * tags.
+ *
+ * @category Internal
  */
 export function convertEventDetailsToSentryContext(
     eventDetails: EventDetails,

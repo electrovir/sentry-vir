@@ -94,13 +94,13 @@ describe(ExtraContextError.name, () => {
 
 describe(throwWithExtraContext.name, () => {
     it('throws', () => {
-        assert.throws(() =>
-            throwWithExtraContext('nothing burger', {
+        assert.throws(() => {
+            return throwWithExtraContext('nothing burger', {
                 context: {
                     stuff: 'hi',
                 },
-            }),
-        );
+            });
+        });
     });
 
     it('includes extra context', () => {

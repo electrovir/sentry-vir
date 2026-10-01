@@ -11,9 +11,13 @@ export type SentryDepImporter = () => Promise<SentryDep>;
 /** The sentry dep import for each execution env. */
 export const sentryDepByEnv: Record<SentryExecutionEnvEnum, SentryDepImporter> = {
     /** Sentry client for the browser. */
-    [SentryExecutionEnvEnum.Browser]: () => import('@sentry/browser'),
+    [SentryExecutionEnvEnum.Browser]() {
+        return import('@sentry/browser');
+    },
     /** Sentry client for the Node.js. */
-    [SentryExecutionEnvEnum.Node]: () => import('@sentry/node'),
+    [SentryExecutionEnvEnum.Node]() {
+        return import('@sentry/node');
+    },
 };
 
 /** Determine which Sentry client dependency to use and then import it. */

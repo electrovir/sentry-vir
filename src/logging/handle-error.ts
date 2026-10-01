@@ -18,7 +18,11 @@ import {addPrematureEvent} from './premature-events.js';
 import {checkActiveThrottle} from './send-log.js';
 import {sentryClientForLogging} from './sentry-client-for-logging.js';
 
-/** Record an error to Sentry without throwing it. */
+/**
+ * Record an error to Sentry without throwing it.
+ *
+ * @category Internal
+ */
 export function handleError(
     error: unknown,
     eventOptions?: EventContextAndTags,

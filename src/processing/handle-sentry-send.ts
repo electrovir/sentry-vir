@@ -11,7 +11,11 @@ import {
     type ThrottleOptions,
 } from './throttling.js';
 
-/** Creates a handler for Sentry events based on the given env. */
+/**
+ * Creates a handler for Sentry events based on the given env.
+ *
+ * @category Internal
+ */
 export function createSentryHandler<T extends TransactionEvent | ErrorEvent>({
     isDev,
     isSilent,

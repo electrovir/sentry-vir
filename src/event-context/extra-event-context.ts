@@ -5,18 +5,24 @@ import {type EventExtraContext, type EventTags, type ThrottleOverride} from './e
 /**
  * Symbol used to attach extra event context to events. This is particularly useful for errors so
  * they can be thrown while attaching this extra context to them.
+ *
+ * @category Internal
  */
 export const extraEventContextSymbol = Symbol('extra-event-context');
 
 /**
  * Symbol used to attach extra event tags to events. Used alongside extraEventContextSymbol for
  * attaching tag data to thrown errors.
+ *
+ * @category Internal
  */
 export const extraEventTagsSymbol = Symbol('extra-event-tags');
 
 /**
  * Symbol used to attach extra event attachments to events. Used alongside extraEventContextSymbol
  * for attaching file data to thrown errors.
+ *
+ * @category Internal
  */
 export const extraEventAttachmentsSymbol = Symbol('extra-event-attachments');
 
@@ -24,37 +30,71 @@ export const extraEventAttachmentsSymbol = Symbol('extra-event-attachments');
  * Symbol used to attach a per-event throttle override to an event or error. The attached value is a
  * {@link ThrottleOverride}: at most one of `threshold` (tighten throttling for this event) or
  * `disabled` (bypass throttling entirely) may be set.
+ *
+ * @category Internal
  */
 export const extraEventThrottleSymbol = Symbol('extra-event-throttle');
 
-/** Simply describes an object that has extra event context. */
+/**
+ * Simply describes an object that has extra event context.
+ *
+ * @category Internal
+ */
 export type HasExtraContext = {[extraEventContextSymbol]: EventExtraContext};
 
-/** Simply describes an object that has extra event tags. */
+/**
+ * Simply describes an object that has extra event tags.
+ *
+ * @category Internal
+ */
 export type HasExtraTags = {[extraEventTagsSymbol]: EventTags};
 
-/** Simply describes an object that has extra event attachments. */
+/**
+ * Simply describes an object that has extra event attachments.
+ *
+ * @category Internal
+ */
 export type HasExtraAttachments = {[extraEventAttachmentsSymbol]: ReadonlyArray<Attachment>};
 
-/** Simply describes an object that carries a per-event throttle override. */
+/**
+ * Simply describes an object that carries a per-event throttle override.
+ *
+ * @category Internal
+ */
 export type HasExtraThrottle = {[extraEventThrottleSymbol]: ThrottleOverride};
 
-/** Type guard for whether any given input has extra event context. */
+/**
+ * Type guard for whether any given input has extra event context.
+ *
+ * @category Internal
+ */
 export function hasExtraEventContext(input: unknown): input is HasExtraContext {
     return check.hasKey(input, extraEventContextSymbol) && !!input[extraEventContextSymbol];
 }
 
-/** Type guard for whether any given input has extra event tags. */
+/**
+ * Type guard for whether any given input has extra event tags.
+ *
+ * @category Internal
+ */
 export function hasExtraEventTags(input: unknown): input is HasExtraTags {
     return check.hasKey(input, extraEventTagsSymbol) && !!input[extraEventTagsSymbol];
 }
 
-/** Type guard for whether any given input has extra event attachments. */
+/**
+ * Type guard for whether any given input has extra event attachments.
+ *
+ * @category Internal
+ */
 export function hasExtraEventAttachments(input: unknown): input is HasExtraAttachments {
     return check.hasKey(input, extraEventAttachmentsSymbol) && !!input[extraEventAttachmentsSymbol];
 }
 
-/** Type guard for whether any given input carries a per-event throttle override. */
+/**
+ * Type guard for whether any given input carries a per-event throttle override.
+ *
+ * @category Internal
+ */
 export function hasExtraEventThrottle(input: unknown): input is HasExtraThrottle {
     return check.hasKey(input, extraEventThrottleSymbol) && !!input[extraEventThrottleSymbol];
 }
@@ -62,6 +102,8 @@ export function hasExtraEventThrottle(input: unknown): input is HasExtraThrottle
 /**
  * Checks if extra event context has been injected into the input via extraEventContextSymbol and,
  * if so, extracts it.
+ *
+ * @category Internal
  */
 export function extractExtraContentFromSymbol(input: unknown): EventExtraContext | undefined {
     if (hasExtraEventContext(input)) {
@@ -74,6 +116,8 @@ export function extractExtraContentFromSymbol(input: unknown): EventExtraContext
 /**
  * Checks if extra event tags have been injected into the input via extraEventTagsSymbol and, if so,
  * extracts them.
+ *
+ * @category Internal
  */
 export function extractExtraTagsFromSymbol(input: unknown): EventTags | undefined {
     if (hasExtraEventTags(input)) {
@@ -85,6 +129,8 @@ export function extractExtraTagsFromSymbol(input: unknown): EventTags | undefine
 /**
  * Checks if extra event attachments have been injected into the input via
  * extraEventAttachmentsSymbol and, if so, extracts them.
+ *
+ * @category Internal
  */
 export function extractExtraAttachmentsFromSymbol(
     input: unknown,
@@ -98,6 +144,8 @@ export function extractExtraAttachmentsFromSymbol(
 /**
  * Tries to extract extra event context via extraEventContextSymbol. Returns undefined if there is
  * no extra event context.
+ *
+ * @category Internal
  */
 export function extractExtraEventContext(event: EventHint | Event): EventExtraContext | undefined {
     const fromRootSymbol = extractExtraContentFromSymbol(event);
@@ -126,6 +174,8 @@ export function extractExtraEventContext(event: EventHint | Event): EventExtraCo
 /**
  * Tries to extract extra event tags via extraEventTagsSymbol. Returns undefined if there are no
  * extra event tags.
+ *
+ * @category Internal
  */
 export function extractExtraEventTags(event: EventHint | Event): EventTags | undefined {
     const fromRootSymbol = extractExtraTagsFromSymbol(event);
@@ -149,6 +199,8 @@ export function extractExtraEventTags(event: EventHint | Event): EventTags | und
 /**
  * Tries to extract extra event attachments via extraEventAttachmentsSymbol. Returns undefined if
  * there are no extra event attachments.
+ *
+ * @category Internal
  */
 export function extractExtraEventAttachments(
     event: EventHint | Event,
@@ -174,6 +226,8 @@ export function extractExtraEventAttachments(
 /**
  * Tries to extract a per-event {@link ThrottleOverride} via extraEventThrottleSymbol from the input
  * itself or its originalException. Returns `undefined` if none is set.
+ *
+ * @category Internal
  */
 export function extractExtraEventThrottle(event: EventHint | Event): ThrottleOverride | undefined {
     const fromRoot = hasExtraEventThrottle(event) ? event[extraEventThrottleSymbol] : undefined;

@@ -8,7 +8,11 @@ import {processSentryEvent} from '../processing/event-processor.js';
 import {setActiveThrottleOptions, type ThrottleOptions} from '../processing/throttling.js';
 import {createSentryConfig, type UserOverrides} from './sentry-config.js';
 
-/** Configuration for initializing Sentry. */
+/**
+ * Configuration for initializing Sentry.
+ *
+ * @category Internal
+ */
 export type InitSentryInput = {
     /** The release environment, rather than the execution environment (browser vs node). */
     releaseEnv: string;
@@ -53,6 +57,8 @@ export type InitSentryInput = {
 /**
  * The Sentry client returned by any of the init functions: the raw Sentry dep plus sentry-vir's own
  * additions.
+ *
+ * @category Internal
  */
 export type SentryVirClient<SpecificSentryDep extends SentryDep = SentryDep> = SpecificSentryDep & {
     /**
@@ -64,7 +70,11 @@ export type SentryVirClient<SpecificSentryDep extends SentryDep = SentryDep> = S
     setLoggingDisabled: typeof setLoggingDisabled;
 };
 
-/** Combines a raw Sentry dep with sentry-vir's own client additions. */
+/**
+ * Combines a raw Sentry dep with sentry-vir's own client additions.
+ *
+ * @category Internal
+ */
 export function createSentryVirClient<SpecificSentryDep extends SentryDep>(
     sentryDep: SpecificSentryDep,
 ): SentryVirClient<SpecificSentryDep> {
@@ -82,6 +92,8 @@ export function createSentryVirClient<SpecificSentryDep extends SentryDep>(
  * with all the default sentry-vir integrations and configs.
  *
  * To override any default sentry-vir settings, include them in the userConfig input.
+ *
+ * @category Internal
  */
 export async function baseInitSentry({
     dsn,
@@ -113,9 +125,9 @@ export async function baseInitSentry({
     });
 
     sentryDep.init(finalSentryConfig);
-    sentryDep.addEventProcessor((event, hint) =>
-        processSentryEvent(event, hint, createUniversalContext),
-    );
+    sentryDep.addEventProcessor((event, hint) => {
+        return processSentryEvent(event, hint, createUniversalContext);
+    });
 
     setActiveThrottleOptions(throttleOptions);
     setLoggingDisabled(!!disableLogging);

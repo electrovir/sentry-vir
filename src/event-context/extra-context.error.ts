@@ -21,6 +21,7 @@ import {
  *
  * The following examples are equivalent:
  *
+ * @category Internal
  * @example Throw new ExtraContextError('my error', {context: {stuff: 'hi'}});
  *
  * @example Const myError = new Error('my error'); throwWithExtraContext(myError, {context: {stuff:
@@ -53,6 +54,8 @@ export class ExtraContextError extends Error {
 /**
  * Adds extra context to an error without modifying the error's message or stack trace (or any of
  * its other properties), then throws the error so it can propagate as usual.
+ *
+ * @category Internal
  */
 export function throwWithExtraContext(
     originalError: unknown,

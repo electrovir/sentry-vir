@@ -9,12 +9,18 @@ let loggingDisabled = false;
  *
  * This is also exposed as a method on the client returned from `initSentry` and can be set at init
  * time with the `disableLogging` init option.
+ *
+ * @category Internal
  */
 export function setLoggingDisabled(this: void, disabled: boolean) {
     loggingDisabled = disabled;
 }
 
-/** Whether {@link setLoggingDisabled} has currently disabled all sentry-vir logging. */
+/**
+ * Whether {@link setLoggingDisabled} has currently disabled all sentry-vir logging.
+ *
+ * @category Internal
+ */
 export function isLoggingDisabled() {
     return loggingDisabled;
 }

@@ -2,12 +2,20 @@ import {type MaybePromise} from '@augment-vir/common';
 import {type SentryDep} from '../env/execution-env.js';
 import {sendPrematureEvents} from './premature-events.js';
 
-/** The bare minimum Sentry client needed for logging events. */
+/**
+ * The bare minimum Sentry client needed for logging events.
+ *
+ * @category Internal
+ */
 export type SentryClientForLogging = Pick<
     SentryDep,
     'captureMessage' | 'captureException' | 'captureEvent' | 'setTags' | 'withScope'
 >;
-/** Internal sentry client used for logging. */
+/**
+ * Internal sentry client used for logging.
+ *
+ * @category Internal
+ */
 export let sentryClientForLogging: SentryClientForLogging | undefined;
 
 /**
@@ -19,6 +27,8 @@ export let sentryClientForLogging: SentryClientForLogging | undefined;
  *
  * This can be safely called multiple times (to overwrite the previously set Sentry client) because
  * previous events won't be handled multiple times.
+ *
+ * @category Internal
  */
 export async function setSentryClientForLogging(client: MaybePromise<SentryClientForLogging>) {
     const hadClientBefore = !!sentryClientForLogging;
