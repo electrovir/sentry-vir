@@ -1,6 +1,6 @@
 {
     "name": "sentry-vir",
-    "version": "4.5.2",
+    "version": "4.5.3",
     "description": "Easily use Sentry.",
     "keywords": [
         "config",
@@ -46,10 +46,10 @@
     "dependencies": {
         "@augment-vir/assert": "^32.5.0",
         "@augment-vir/common": "^32.5.0",
-        "@sentry/browser": "^11.0.0",
-        "@sentry/core": "^11.0.0",
-        "@sentry/node": "^11.0.0",
-        "date-vir": "^9.2.1",
+        "@sentry/browser": "^11.4.0",
+        "@sentry/core": "^11.4.0",
+        "@sentry/node": "^11.4.0",
+        "date-vir": "^9.3.0",
         "fuzzy-vir": "^1.0.0"
     },
     "devDependencies": {
@@ -58,26 +58,26 @@
         "@eslint/js": "^10.0.1",
         "@stylistic/eslint-plugin": "^5.10.0",
         "@stylistic/eslint-plugin-ts": "^4.4.1",
-        "@typescript-eslint/eslint-plugin": "^8.70.1",
+        "@typescript-eslint/eslint-plugin": "^8.71.0",
         "@web/dev-server-esbuild": "^2.0.0",
         "@web/test-runner": "^1.0.0",
         "@web/test-runner-commands": "^1.0.1",
         "@web/test-runner-playwright": "^1.0.0",
         "@web/test-runner-visual-regression": "^1.0.1",
-        "cspell": "^10.3.4",
-        "dependency-cruiser": "^18.4.0",
+        "cspell": "^10.3.6",
+        "dependency-cruiser": "^18.5.0",
         "esbuild": "^0.28.2",
         "eslint": "^10.11.0",
         "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-jsdoc": "^64.5.4",
+        "eslint-plugin-jsdoc": "^65.0.2",
         "eslint-plugin-monorepo-cop": "^1.0.2",
         "eslint-plugin-playwright": "^2.12.0",
         "eslint-plugin-prettier": "^5.5.6",
         "eslint-plugin-require-extensions": "^0.1.3",
-        "eslint-plugin-sonarjs": "^4.2.1",
+        "eslint-plugin-sonarjs": "^4.2.2",
         "eslint-plugin-unicorn": "^76.0.0",
         "istanbul-smart-text-reporter": "^1.1.5",
-        "markdown-code-example-inserter": "^3.0.6",
+        "markdown-code-example-inserter": "^3.1.1",
         "npm-check-updates": "^23.1.0",
         "prettier": "~3.3.3",
         "prettier-plugin-interpolated-html-tags": "^2.0.2",
@@ -90,9 +90,9 @@
         "runstorm": "^1.1.0",
         "typedoc": "^0.28.20",
         "typescript": "^6.0.3",
-        "typescript-eslint": "^8.70.1",
-        "virmator": "^14.37.1",
-        "vite": "^8.3.1"
+        "typescript-eslint": "^8.71.0",
+        "virmator": "^14.37.2",
+        "vite": "^8.3.2"
     },
     "engines": {
         "node": ">=22"
