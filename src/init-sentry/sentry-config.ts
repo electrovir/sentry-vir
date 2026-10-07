@@ -54,6 +54,8 @@ export function createSentryConfig<const ExecutionEnv extends SentryExecutionEnv
         maxValueLength: 10_000,
         tracesSampleRate: undefined,
         tracesSampler: undefined,
+        /** Sentry only calls `beforeSendTransaction` with the `'static'` trace lifecycle. */
+        traceLifecycle: 'static',
     };
 
     const envSentryConfig = sentryConfigByEnv[executionEnv](
