@@ -48,6 +48,12 @@ export function createSentryConfig<const ExecutionEnv extends SentryExecutionEnv
 }): Promise<BrowserOptions | NodeOptions> {
     const sharedSentryConfig: PartialWithUndefined<Options> = {
         beforeSend: createSentryHandler<ErrorEvent>(flagParams),
+        /**
+         * `beforeSendSpan`, the suggested replacement, can only modify spans. It can't drop them,
+         * so dev mode, throttling, and globally disabled logging can't keep transactions from being
+         * sent through it.
+         */
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         beforeSendTransaction: createSentryHandler<TransactionEvent>(flagParams),
         defaultIntegrations: false,
         enabled: true,
