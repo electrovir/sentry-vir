@@ -1,6 +1,6 @@
 {
     "name": "sentry-vir",
-    "version": "4.5.3",
+    "version": "4.5.4",
     "description": "Easily use Sentry.",
     "keywords": [
         "config",

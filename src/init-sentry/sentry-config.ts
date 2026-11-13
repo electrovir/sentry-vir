@@ -1,6 +1,6 @@
 import {mergeDeep, type PartialWithUndefined} from '@augment-vir/common';
 import {type BrowserOptions} from '@sentry/browser';
-import {type ErrorEvent, type Options, type TransactionEvent} from '@sentry/core';
+import {type ErrorEvent, type Options} from '@sentry/core';
 import {type NodeOptions} from '@sentry/node';
 import {
     type SentryBrowserDep,
@@ -48,19 +48,12 @@ export function createSentryConfig<const ExecutionEnv extends SentryExecutionEnv
 }): Promise<BrowserOptions | NodeOptions> {
     const sharedSentryConfig: PartialWithUndefined<Options> = {
         beforeSend: createSentryHandler<ErrorEvent>(flagParams),
-        /**
-         * `beforeSendSpan`, the suggested replacement, can only modify spans. It can't drop them,
-         * so dev mode, throttling, and globally disabled logging can't keep transactions from being
-         * sent through it.
-         */
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        beforeSendTransaction: createSentryHandler<TransactionEvent>(flagParams),
         defaultIntegrations: false,
         enabled: true,
         maxValueLength: 10_000,
         tracesSampleRate: undefined,
         tracesSampler: undefined,
-        /** Sentry only calls `beforeSendTransaction` with the `'static'` trace lifecycle. */
+        /** Transactions only reach event processors with the `'static'` trace lifecycle. */
         traceLifecycle: 'static',
     };
 
@@ -97,7 +90,7 @@ const sentryConfigByEnv = {
         return options;
     },
     [SentryExecutionEnvEnum.Node](NodeSentry: SentryNodeDep): NodeOptions {
-        const options: BrowserOptions = {
+        const options: NodeOptions = {
             integrations: [
                 NodeSentry.onUncaughtExceptionIntegration(),
                 NodeSentry.onUnhandledRejectionIntegration(),

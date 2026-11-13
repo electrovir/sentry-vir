@@ -1,10 +1,13 @@
 import {type PartialWithUndefined} from '@augment-vir/common';
-import {type Options} from '@sentry/core';
+import {type BrowserOptions} from '@sentry/browser';
+import {type Options, type Event as SentryEvent, type TransactionEvent} from '@sentry/core';
+import {type NodeOptions} from '@sentry/node';
 import {type SentryDep, type SentryExecutionEnvEnum} from '../env/execution-env.js';
 import {type EventExtraContextCreator} from '../event-context/event-context.js';
 import {setLoggingDisabled} from '../logging/logging-disabled.js';
 import {setSentryClientForLogging} from '../logging/sentry-client-for-logging.js';
 import {processSentryEvent} from '../processing/event-processor.js';
+import {createSentryHandler} from '../processing/handle-sentry-send.js';
 import {setActiveThrottleOptions, type ThrottleOptions} from '../processing/throttling.js';
 import {createSentryConfig, type UserOverrides} from './sentry-config.js';
 
@@ -124,9 +127,38 @@ export async function baseInitSentry({
         },
     });
 
-    sentryDep.init(finalSentryConfig);
+    /**
+     * Calling `init` on the `SentryDep` union requires options that satisfy both the browser and
+     * Node option types at once, which their `tunnel` types make impossible. `createSentryConfig`
+     * already builds the options for whichever dep this is.
+     */
+    (
+        sentryDep.init satisfies (options: any) => unknown as (
+            options: BrowserOptions | NodeOptions,
+        ) => unknown
+    )(finalSentryConfig);
+
+    /**
+     * Transactions are handled here instead of in `beforeSendTransaction`, which is deprecated.
+     * `beforeSendSpan`, its suggested replacement, can't drop spans, so it can't apply dev mode,
+     * throttling, or globally disabled logging.
+     */
+    const handleTransaction = createSentryHandler<TransactionEvent>({
+        isDev,
+        isSilent: !!silent,
+        throttleOptions,
+    });
+    const sentryClient = sentryDep.getClient();
     sentryDep.addEventProcessor((event, hint) => {
-        return processSentryEvent(event, hint, createUniversalContext);
+        const processedEvent = processSentryEvent(event, hint, createUniversalContext);
+        /**
+         * This processor lives on the isolation scope, so it outlives the client when `init` is
+         * called again. `beforeSendTransaction` was a client option, so only the newest init's
+         * handler applied.
+         */
+        return processedEvent.type === 'transaction' && sentryDep.getClient() === sentryClient
+            ? handleTransaction(processedEvent satisfies SentryEvent as TransactionEvent, hint)
+            : processedEvent;
     });
 
     setActiveThrottleOptions(throttleOptions);
