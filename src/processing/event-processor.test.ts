@@ -95,6 +95,45 @@ describe(processSentryEvent.name, () => {
             },
         },
         {
+            it: 'lets capture context tags override tags attached to the exception',
+            inputs: [
+                {
+                    message: 'tagged message',
+                    level: EventSeverityEnum.Error,
+                    tags: {
+                        category: 'portals',
+                        patientId: 'patient-1',
+                    },
+                },
+                {
+                    originalException: {
+                        [extraEventTagsSymbol]: {
+                            category: 'backend',
+                            fileType: 'pdf',
+                        },
+                    },
+                    captureContext: {
+                        tags: {
+                            category: 'portals',
+                            patientId: 'patient-1',
+                        },
+                    },
+                },
+            ],
+            expect: {
+                message: 'tagged message',
+                level: EventSeverityEnum.Error,
+                extra: {
+                    originalFullMessage: 'tagged message',
+                },
+                tags: {
+                    category: 'portals',
+                    patientId: 'patient-1',
+                    fileType: 'pdf',
+                },
+            },
+        },
+        {
             it: 'does not add tags key when no tags are present',
             inputs: [
                 {

@@ -2,6 +2,7 @@ import {assert} from '@augment-vir/assert';
 import {describe, it} from '@augment-vir/test';
 import {ExtraContextError, throwWithExtraContext} from './extra-context.error.js';
 import {
+    extractExtraTagsFromSymbol,
     hasExtraEventAttachments,
     hasExtraEventContext,
     hasExtraEventTags,
@@ -127,6 +128,29 @@ describe(throwWithExtraContext.name, () => {
         } catch (error) {
             assert.isTrue(hasExtraEventTags(error));
         }
+    });
+
+    it('merges tags from repeated calls with the last call winning', () => {
+        const error = new Error('repeated tags');
+        assert.throws(() => {
+            throwWithExtraContext(error, {
+                tags: {
+                    category: 'backend',
+                    fileType: 'pdf',
+                },
+            });
+        });
+        assert.throws(() => {
+            throwWithExtraContext(error, {
+                tags: {
+                    category: 'portals',
+                },
+            });
+        });
+        assert.deepEquals(extractExtraTagsFromSymbol(error), {
+            category: 'portals',
+            fileType: 'pdf',
+        });
     });
 
     it('includes both context and tags', () => {

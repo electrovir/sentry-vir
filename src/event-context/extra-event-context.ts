@@ -183,10 +183,22 @@ export function extractExtraEventTags(event: EventHint | Event): EventTags | und
         'originalException' in event
             ? extractExtraTagsFromSymbol(event.originalException)
             : undefined;
+    /**
+     * Sentry applies these tags to the event before event processors run, so without re-applying
+     * them last, tags attached deeper in the call stack would override the tags passed to
+     * `handleError` or `sendLog`.
+     */
+    const fromCapture =
+        'captureContext' in event &&
+        check.isObject(event.captureContext) &&
+        'tags' in event.captureContext
+            ? event.captureContext.tags
+            : undefined;
 
     const combined: EventTags = {
         ...fromRootSymbol,
         ...fromSubSymbol,
+        ...fromCapture,
     };
 
     if (Object.keys(combined).length) {

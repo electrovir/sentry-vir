@@ -1,9 +1,11 @@
 import {assert} from '@augment-vir/assert';
 import {describe, it} from '@augment-vir/test';
+import {ExtraContextError, throwWithExtraContext} from '../event-context/extra-context.error.js';
+import {extraEventTagsSymbol} from '../event-context/extra-event-context.js';
 import {setLoggingDisabled} from './logging-disabled.js';
 import {sendLog} from './send-log.js';
 import {setSentryClientForLogging} from './sentry-client-for-logging.js';
-import {createMockSentryClient} from './sentry-client-for-logging.mock.js';
+import {createMockSentryClient, initRecordingSentry} from './sentry-client-for-logging.mock.js';
 
 describe('sendLog', () => {
     it('sends a string message via captureMessage', async () => {
@@ -136,5 +138,70 @@ describe('sendLog', () => {
 
         sendLog.warning('message after re-enabling');
         assert.isLengthExactly(capturedMessages, 1);
+    });
+
+    it('sends the tags from whichever call set them last', async () => {
+        const recordingSentry = await initRecordingSentry();
+
+        const error = new ExtraContextError('tagged error', {
+            tags: {
+                category: 'first',
+                origin: 'first',
+                untouched: 'first',
+            },
+        });
+        assert.throws(() => {
+            throwWithExtraContext(error, {
+                tags: {
+                    category: 'second',
+                    origin: 'second',
+                },
+            });
+        });
+        sendLog.warning(error, {
+            tags: {
+                category: 'third',
+            },
+        });
+        await recordingSentry.flush();
+
+        assert.deepEquals(
+            recordingSentry.sentEvents.map((event) => event.tags),
+            [
+                {
+                    category: 'third',
+                    origin: 'second',
+                    untouched: 'first',
+                },
+            ],
+        );
+    });
+
+    it('lets sendLog tags override tags attached to a raw event', async () => {
+        const recordingSentry = await initRecordingSentry();
+
+        const rawEvent = {
+            message: 'tagged raw event',
+            [extraEventTagsSymbol]: {
+                category: 'first',
+                untouched: 'first',
+            },
+        };
+        sendLog.warning(rawEvent, {
+            tags: {
+                category: 'second',
+            },
+        });
+        await recordingSentry.flush();
+
+        assert.deepEquals(
+            recordingSentry.sentEvents.map((event) => event.tags),
+            [
+                {
+                    category: 'second',
+                    untouched: 'first',
+                },
+            ],
+        );
     });
 });

@@ -71,7 +71,10 @@ export function throwWithExtraContext(
         error[extraEventContextSymbol] = extraData.context;
     }
     if (extraData.tags) {
-        error[extraEventTagsSymbol] = extraData.tags;
+        error[extraEventTagsSymbol] = {
+            ...error[extraEventTagsSymbol],
+            ...extraData.tags,
+        };
     }
     if (extraData.attachments) {
         error[extraEventAttachmentsSymbol] = extraData.attachments;

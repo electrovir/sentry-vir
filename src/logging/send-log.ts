@@ -1,5 +1,5 @@
 import {check} from '@augment-vir/assert';
-import {extractErrorMessage, type PartialWithUndefined} from '@augment-vir/common';
+import {extractErrorMessage, omitObjectKeys, type PartialWithUndefined} from '@augment-vir/common';
 import {
     type ErrorEvent,
     type EventHint,
@@ -15,6 +15,11 @@ import {
     type ThrottleOverride,
 } from '../event-context/event-context.js';
 import {EventSeverityEnum, type InfoEventSeverity} from '../event-context/event-severity.js';
+import {
+    extractExtraTagsFromSymbol,
+    extraEventTagsSymbol,
+    type HasExtraTags,
+} from '../event-context/extra-event-context.js';
 import {extractOriginalMessage} from '../processing/event-processor.js';
 import {LoggingState, logToConsoleWithoutSentry} from '../processing/log-to-console.js';
 import {
@@ -130,11 +135,24 @@ export function checkActiveThrottle(
 
 function wrapLogWithSeverity(severity: EventSeverityEnum) {
     return (info: SendLogInfo, eventOptions?: EventContextAndTags) => {
+        /**
+         * An `Error` is sent as its message string, which drops the tags attached to it, so they
+         * are carried over here. A raw event's attached tags are carried over too, so the tags
+         * passed here can override them.
+         */
+        const attachedTags = extractExtraTagsFromSymbol(info);
+
         return sendLogToSentry({
             logInfo: info,
             eventDetails: {
                 extraContext: eventOptions?.context,
-                tags: eventOptions?.tags,
+                tags:
+                    attachedTags || eventOptions?.tags
+                        ? {
+                              ...attachedTags,
+                              ...eventOptions?.tags,
+                          }
+                        : undefined,
                 attachments: eventOptions?.attachments,
                 severity,
             },
@@ -222,7 +240,18 @@ function sendLogToSentry({
             return check.isString(resolvedLogInfo)
                 ? client.captureMessage(resolvedLogInfo, scopeContext)
                 : client.captureEvent({
-                      ...resolvedLogInfo,
+                      /**
+                       * The attached tags are already merged into `scopeContext.tags`. Left on the
+                       * event, the event processor would apply them again over
+                       * `scopeContext.tags`.
+                       */
+                      ...omitObjectKeys(
+                          resolvedLogInfo satisfies SendLogEvent as SendLogEvent &
+                              Partial<HasExtraTags>,
+                          [
+                              extraEventTagsSymbol,
+                          ],
+                      ),
                       ...scopeContext,
                   });
         }
